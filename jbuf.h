@@ -1,3 +1,16 @@
+#include "NvInfer.h"
+#include "half.h"
+#include "common.h"
+#include <cuda_runtime_api.h>
+#include <cassert>
+#include <iostream>
+#include <iterator>
+#include <memory>
+#include <numeric>
+#include <string>
+#include <vector>
+#include <new>
+
 template <typename AllocFunc, typename FreeFunc>
 class GenericBuffer
 {
@@ -81,7 +94,7 @@ public:
     void operator()(void* ptr) const { cudaFree(ptr); }
 };
 
-using ManagedBuffer = GenericBuffer<ManagedAllocator, ManagedFree>
+using ManagedBuffer = GenericBuffer<ManagedAllocator, ManagedFree>;
 
 class UnifiedBufManager {
     public:
@@ -90,7 +103,7 @@ class UnifiedBufManager {
     //!
     //! \brief Create a BufferManager for handling buffer interactions with engine.
     //!
-    BufferManager(std::shared_ptr<nvinfer1::ICudaEngine> engine, const int& batchSize)
+    UnifiedBufManager(std::shared_ptr<nvinfer1::ICudaEngine> engine, const int& batchSize)
         : mEngine(engine)
         , mBatchSize(batchSize)
     {
@@ -118,7 +131,7 @@ class UnifiedBufManager {
         return mManagedBuffers[index]->size();
     }
 
-    void dumpBuffer(std::ostream& os, const std::string& tensorName)
+    /*void dumpBuffer(std::ostream& os, const std::string& tensorName)
     {
         int index = mEngine->getBindingIndex(tensorName.c_str());
         if (index == -1)
@@ -142,9 +155,9 @@ class UnifiedBufManager {
         case nvinfer1::DataType::kHALF: print<half_float::half>(os, buf, bufSize, rowCount); break;
         case nvinfer1::DataType::kINT8: assert(0 && "Int8 network-level input and output is not supported"); break;
         }
-    }
+    }*/
 
-    ~BufferManager() = default;
+    ~UnifiedBufManager() = default;
 
     void* getBuffer(const std::string& tensorName) const
     {
@@ -159,4 +172,4 @@ private:
     int mBatchSize;                                              //!< The batch size
     std::vector<std::unique_ptr<ManagedBuffer>> mManagedBuffers; //!< The vector of pointers to managed buffers
     std::vector<void*> mDeviceBindings;                          //!< The vector of device buffers needed for engine execution
-}
+};

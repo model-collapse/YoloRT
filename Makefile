@@ -28,19 +28,20 @@ CC:= g++
 NVCC:=/usr/local/cuda-$(CUDA_VER)/bin/nvcc
 
 CFLAGS:= -Wall -std=c++11 -shared -fPIC
-CFLAGS+= -I../../includes -I/usr/local/cuda-$(CUDA_VER)/include
+CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/cuda-$(CUDA_VER)/include -I/usr/include -I/usr/src/tensorrt/samples/common
 
 LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda-$(CUDA_VER)/lib64 -lcudart -lcublas -lstdc++fs
 LFLAGS:= -shared -Wl,--start-group $(LIBS) -Wl,--end-group
 
 INCS:= $(wildcard *.h)
-SRCFILES:= nvdsinfer_yolo_engine.cpp \
+SRCFILES:= main.cpp \
+           recv.cpp \
+           nvdsinfer_yolo_engine.cpp \
            nvdsparsebbox_Yolo.cpp   \
            yoloPlugins.cpp    \
            trt_utils.cpp              \
            yolo.cpp              \
-           kernels.cu       \
-           main.cpp
+           kernels.cu       
 TARGET_EXEC:= yolo_detection
 
 TARGET_OBJS:= $(SRCFILES:.cpp=.o)
