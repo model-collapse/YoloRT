@@ -39,13 +39,14 @@ SRCFILES:= nvdsinfer_yolo_engine.cpp \
            yoloPlugins.cpp    \
            trt_utils.cpp              \
            yolo.cpp              \
-           kernels.cu
-TARGET_LIB:= libnvdsinfer_custom_impl_Yolo.so
+           kernels.cu       \
+           main.cpp
+TARGET_EXEC:= yolo_detection
 
 TARGET_OBJS:= $(SRCFILES:.cpp=.o)
 TARGET_OBJS:= $(TARGET_OBJS:.cu=.o)
 
-all: $(TARGET_LIB)
+all: $(TARGET_EXEC)
 
 %.o: %.cpp $(INCS) Makefile
 	$(CC) -c -o $@ $(CFLAGS) $<
@@ -53,8 +54,8 @@ all: $(TARGET_LIB)
 %.o: %.cu $(INCS) Makefile
 	$(NVCC) -c -o $@ --compiler-options '-fPIC' $<
 
-$(TARGET_LIB) : $(TARGET_OBJS)
+$(TARGET_EXEC) : $(TARGET_OBJS)
 	$(CC) -o $@  $(TARGET_OBJS) $(LFLAGS)
 
 clean:
-	rm -rf $(TARGET_LIB)
+	rm -rf $(TARGET_EXEC)
