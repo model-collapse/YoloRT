@@ -110,12 +110,27 @@ class UnifiedBufManager {
         for (int i = 0; i < mEngine->getNbBindings(); i++)
         {
             // Create host and device buffers
-            size_t vol = samplesCommon::volume(mEngine->getBindingDimensions(i));
-            size_t elementSize = samplesCommon::getElementSize(mEngine->getBindingDataType(i));
+            auto dims = mEngine->getBindingDimensions(i);
+            size_t vol = samplesCommon::volume(dims);
+            auto dataType = mEngine->getBindingDataType(i);
+            size_t elementSize = samplesCommon::getElementSize(dataType);
             size_t allocationSize = static_cast<size_t>(mBatchSize) * vol * elementSize;
             std::unique_ptr<ManagedBuffer> manBuf{new ManagedBuffer(allocationSize)};
             mDeviceBindings.emplace_back(manBuf->data());
             mManagedBuffers.emplace_back(std::move(manBuf));
+            NvDsInferLayerInfo layerInfo;
+            layerInfo.buffer = manBuf->data();
+            layerInfo.dataType = dataType;
+            layerInfo.layerName = mEngine->getBindingName(i);
+            layerInfo.bindingIndex = i;
+            layerInfo.dims.numDims = dims.nbDims;
+            layerInfo.numElements = 1;
+            layerInfo.isInput = 0;
+            for (int32_t i = 0; i < layerInfo.dims.numDims; i++) {
+                layerInfo.dims.d[i] = dims.d[i];
+                layerInfo.numElements *= dims.d[i];
+            }
+            mLayerInfos.emplace_back(layerInfo);
         }
     }
 
@@ -166,10 +181,19 @@ class UnifiedBufManager {
             return nullptr;
         return mManagedBuffers[index]->data();
     }
+
+    NvDsInferLayerInfo getLayerInfo(const std::string& tensorName) const 
+    {
+        int index = mEngine->getBindingIndex(tensorName.c_str());
+        if (index == -1)
+            return nullptr;
+        return mLayerInfos[index];
+    }
     
 private:
     std::shared_ptr<nvinfer1::ICudaEngine> mEngine;              //!< The pointer to the engine
     int mBatchSize;                                              //!< The batch size
     std::vector<std::unique_ptr<ManagedBuffer>> mManagedBuffers; //!< The vector of pointers to managed buffers
     std::vector<void*> mDeviceBindings;                          //!< The vector of device buffers needed for engine execution
+    std::vector<NvDsInferLayerInfo> mLayerInfos;
 };

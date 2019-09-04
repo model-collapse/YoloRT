@@ -16,6 +16,11 @@ const int32_t input_tensor_width = 640;
 const int32_t input_tensor_depth = 3;
 
 const char* input_blob_name = "data";
+const char[][20] output_blob_names = {
+    "yolo_83",
+    "yolo_95",
+    "yolo_107"
+}
 
 struct InferDeleter
 {
@@ -43,6 +48,11 @@ nvinfer1::ICudaEngine* initEngine(const char* cfg_path, const char* weight_path,
 
 Logger gLogger;
 
+void mark_a_people(cv::Mat canvas, NvDsInferObjectDetectionInfo people) {
+    const static cv::Scalar color(0, 255, 255);
+    cv::rectangle(canvas, cv::Point(people.left, people.top), cv::Point(people.left + people.width, people.top + people.height), color, 2);
+}
+
 int32_t main(int32_t argc, char** argv) {
     fprintf(stderr, "haha\n");
     fflush(stderr);
@@ -62,12 +72,32 @@ int32_t main(int32_t argc, char** argv) {
         exit(1);
     }
 
+    std::vector<NvDsInferLayerInfo> layerInfo;
+    for (int_t i = 0; i < 3; i++) {
+        NvDsInferLayerInfo layer = buffers.getLayerInfo(output_blob_names[i]);
+        layerInfo.emplace_back(layer);
+    }
 
+    static const std::vector<float> kANCHORS = {
+        12, 23,  21,  41, 34,  54,  32,  112,  53, 
+        78, 75,  120, 58, 196, 104, 288, 184,  322
+    };
+
+    static const std::vector<std::vector<int>> kMASKS = {
+        {6, 7, 8},
+        {3, 4, 5},
+        {0, 1, 2}};
+
+    NvDsInferParseDetectionParams params;
+    params.numClassesConfigured = NUM_CLASSES_YOLO;
+
+    int32_t frames = 0;
     while (true) {
+        frames ++;
         auto img = src.recv();
         cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3, buffers.getBuffer(std::string(input_blob_name)));
         //cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3);
-        fprintf(stderr, "resizing from (%d, %d) to (%d, %d)\n", img.rows, img.cols, img_resized.rows, img_resized.cols);
+        fprintf(stderr, "[frame %d]resizing from (%d, %d) to (%d, %d)\n", frames, img.rows, img.cols, img_resized.rows, img_resized.cols);
         cv::resize(img, img_resized, img_resized.size(), 0, 0, CV_INTER_CUBIC);
 
         auto status = ctx->execute(batch_size, buffers.getDeviceBindings().data());
@@ -75,5 +105,25 @@ int32_t main(int32_t argc, char** argv) {
             std::cerr << "execution failed!" << std::endl;
             exit(1);
         }
+
+        NvDsInferNetworkInfo networkInfo;
+        networkInfo.width = img.cols;
+        networkInfo.height = img.rows;
+        networkInfo.channels = 3;
+        
+        std::vector<NvDsInferParseObjectInfo> objs;
+        bool res = NvDsInferParseYoloV3(layerInfo, networkInfo, params, objs, kANCHORS, kMASKS);
+        if (!res) {
+            std::cerr << "fail to call NvDsInferParseYoloV3" << std::endl;
+            exit(1);
+        }
+
+        for (auto obj : objs) {
+            mark_a_people(img, obj);
+        }
+
+        char pathBuf[30];
+        sprintf(pathBuf, "dump/frame_%d.jpg", frames);
+        cv::imwrite(pathBuf, img);
     }
 }
