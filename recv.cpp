@@ -1,5 +1,6 @@
 #include "recv.h"
 #include <opencv2/opencv.hpp>
+#include <inttypes.h>
 #define MAX_BUF_SIZE 1000000 // 1M buffer
 
 ImageSource::ImageSource(const char* address) 
@@ -28,11 +29,11 @@ ImageSource::~ImageSource() {
 }
 
 cv::Mat ImageSource::recv() {
-    fprintf(stderr, "receiving");
+    fprintf(stderr, "receiving\n");
     fflush(stderr);
     this->socket->recv(&this->buf);
-    cv::Mat raw_data(1, this->buf.size(), CV_8UC1, this->buf.data());
-    fprintf(stderr, "received");
+    cv::Mat raw_data(1, this->buf.size() - sizeof(int64_t), CV_8UC1, (char*)this->buf.data() + sizeof(int64_t));
+    fprintf(stderr, "received at" PRId64 "\n", ((int64_t*)this->buf.data())[0]);
     fflush(stderr);
     return cv::imdecode(raw_data, cv::IMREAD_COLOR);
 }
