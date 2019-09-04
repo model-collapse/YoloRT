@@ -50,7 +50,7 @@ int32_t main(int32_t argc, char** argv) {
     // creating image source
     ImageSource src("tcp://10.249.77.88:18964");
 
-    nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
+    /*nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
     nvinfer1::ICudaEngine* engine = initEngine(CFG_PATH, WTS_PATH, builder);
     auto ctx = engine->createExecutionContext();
 
@@ -60,18 +60,20 @@ int32_t main(int32_t argc, char** argv) {
     if (tensor_size != batch_size * input_tensor_height * input_tensor_width * input_tensor_depth * sizeof(float)) {
         std::cerr << "inconsistent input tensor size" << std::endl;
         exit(1);
-    }
+    }*/
 
 
     while (true) {
         auto img = src.recv();
-        cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3, buffers.getBuffer(std::string(input_blob_name)));
+        //cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3, buffers.getBuffer(std::string(input_blob_name)));
+        cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3);
+        fprintf("resizing from (%d, %d) to (%d, %d)\n", img.rows, img.cols, img_resized.rows, img_resized.cols);
         cv::resize(img, img_resized, img_resized.size(), 0, 0, CV_INTER_CUBIC);
 
-        auto status = ctx->execute(batch_size, buffers.getDeviceBindings().data());
+        /*auto status = ctx->execute(batch_size, buffers.getDeviceBindings().data());
         if (!status) {
             std::cerr << "execution failed!" << std::endl;
             exit(1);
-        }
+        }*/
     }
 }

@@ -5,19 +5,19 @@
 ImageSource::ImageSource(const char* address) 
     : ctx(1), buf(MAX_BUF_SIZE) {
     try{
-	this->socket = new zmq::socket_t(this->ctx, ZMQ_SUB);
+        this->socket = new zmq::socket_t(this->ctx, ZMQ_SUB);
     } catch (zmq::error_t err) {
-	fprintf(stderr, "error throwed");
-	exit(1);
+        fprintf(stderr, "error throwed\n");
+        exit(1);
     }
 
-    fprintf(stderr, "connecting");
+    fprintf(stderr, "connecting\n");
     fflush(stderr);
     this->socket->connect(address);
     this->socket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
     int32_t conflate = 1;
     this->socket->setsockopt(ZMQ_CONFLATE, &conflate, sizeof(conflate));
-    fprintf(stderr, "done");
+    fprintf(stderr, "done\n");
     fflush(stderr);
 }
 
