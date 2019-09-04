@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdint.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "NvInfer.h"
@@ -5,8 +7,8 @@
 #include "yolo.h"
 #include "jbuf.h"
 
-const char* CFG_PATH = "";
-const char* WTS_PATH = "";
+const char* CFG_PATH = "../../../model/darknet/yolov3_person.cfg";
+const char* WTS_PATH = "../../../model/darknet/yolov3_person_16000.weights";
 const int32_t batch_size = 1;
 
 const int32_t input_tensor_height = 640;
@@ -39,9 +41,14 @@ nvinfer1::ICudaEngine* initEngine(const char* cfg_path, const char* weight_path,
     return yolo.createEngine();
 }
 
+Logger gLogger;
+
 int32_t main(int32_t argc, char** argv) {
+    fprintf(stderr, "haha\n");
+    fflush(stderr);
+
     // creating image source
-    ImageSource src("tcp://10.249.77.88");
+    ImageSource src("tcp://10.249.77.88:18964");
 
     nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
     nvinfer1::ICudaEngine* engine = initEngine(CFG_PATH, WTS_PATH, builder);

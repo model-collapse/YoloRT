@@ -20,18 +20,14 @@
 # DEALINGS IN THE SOFTWARE.
 ################################################################################
 
-CUDA_VER?=
-ifeq ($(CUDA_VER),)
-  $(error "CUDA_VER is not set")
-endif
 CC:= g++
-NVCC:=/usr/local/cuda-$(CUDA_VER)/bin/nvcc
+NVCC:=/usr/local/cuda/bin/nvcc
 
-CFLAGS:= -Wall -std=c++11 -shared -fPIC
-CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/cuda-$(CUDA_VER)/include -I/usr/include -I/usr/src/tensorrt/samples/common
+CFLAGS:= -Wall -std=c++11 -fPIC -g
+CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/cuda/include -I/usr/include -I/usr/src/tensorrt/samples/common
 
-LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda-$(CUDA_VER)/lib64 -lcudart -lcublas -lstdc++fs
-LFLAGS:= -shared -Wl,--start-group $(LIBS) -Wl,--end-group
+LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda/lib64 -lcudart -lcublas -L/usr/lib -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -L/usr/lib/aarch64-linux-gnu -lzmq -lstdc++fs
+LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 
 INCS:= $(wildcard *.h)
 SRCFILES:= main.cpp \
