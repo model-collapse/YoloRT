@@ -58,7 +58,7 @@ static void addBBoxProposal(const float bx, const float by, const float bw, cons
     NvDsInferParseObjectInfo bbi = convertBBox(bx, by, bw, bh, stride, netW, netH);
     if (((bbi.left + bbi.width) > netW) || ((bbi.top + bbi.height) > netH)) return;
 
-    fprintf(stderr, "[%f, %f | %f, %f]\n", bx, by, bw, bh);
+    //fprintf(stderr, "[%f, %f | %f, %f]\n", bx, by, bw, bh);
     bbi.detectionConfidence = maxProb;
     bbi.classId = maxIndex;
     binfo.push_back(bbi);
@@ -125,9 +125,9 @@ nmsAllClasses(const float nmsThresh,
 
     for (auto& boxes : splitBoxes)
     {
-        fprintf(stderr, "before:%f \n", boxes.size());
+        //fprintf(stderr, "before:%f \n", boxes.size());
         boxes = nonMaximumSuppression(nmsThresh, boxes);
-        fprintf(stderr, "after:%f \n", boxes.size());
+        //fprintf(stderr, "after:%f \n", boxes.size());
         result.insert(result.end(), boxes.begin(), boxes.end());
     }
     return result;
@@ -222,7 +222,7 @@ decodeYoloV3Tensor(
                 const float bh
                     = ph * detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 3)];
 
-                //const float objectness
+                const float objectness
                 //    = detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 4)];
 
                 float maxProb = 0.0f;
@@ -241,7 +241,8 @@ decodeYoloV3Tensor(
                     }
                 }
 
-                //std::cerr << "mp: " << maxProb << "\t";
+                std::cerr << "mp: " << maxProb << "\t";
+                std::cerr << "obj: " << objectness << "\t";
                 //maxProb = objectness * maxProb;
 
                 if (maxProb > probThresh)

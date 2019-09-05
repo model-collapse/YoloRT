@@ -30,7 +30,7 @@ LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda/lib64 -lcudart -
 LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 
 INCS:= $(wildcard *.h)
-SRCFILES:= main.cpp \
+BASE_SRCFILES:= 
            recv.cpp \
            nvdsinfer_yolo_engine.cpp \
            nvdsparsebbox_Yolo.cpp   \
@@ -39,8 +39,9 @@ SRCFILES:= main.cpp \
            yolo.cpp              \
            kernels.cu       
 TARGET_EXEC:= yolo_detection
+CVT_EXEC:= convert_to_trt
 
-TARGET_OBJS:= $(SRCFILES:.cpp=.o)
+TARGET_OBJS:= $(BASE_SRCFILES:.cpp=.o)
 TARGET_OBJS:= $(TARGET_OBJS:.cu=.o)
 
 all: $(TARGET_EXEC)
@@ -51,8 +52,11 @@ all: $(TARGET_EXEC)
 %.o: %.cu $(INCS) Makefile
 	$(NVCC) -c -o $@ --compiler-options '-fPIC' $<
 
-$(TARGET_EXEC) : $(TARGET_OBJS)
-	$(CC) -o $@  $(TARGET_OBJS) $(LFLAGS)
+$(TARGET_EXEC) : $(TARGET_OBJS) main.o
+	$(CC) -o $@  $(TARGET_OBJS) main.o $(LFLAGS)
+
+$(CVT_EXEC) : $(TARGET_OBJS) cvt.o
+	$(CC) -o $@  $(TARGET_OBJS) cvt.o $(LFLAGS)
 
 clean:
 	rm -rf $(TARGET_EXEC)
