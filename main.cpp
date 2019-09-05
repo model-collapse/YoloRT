@@ -115,7 +115,7 @@ int32_t main(int32_t argc, char** argv) {
             exit(1);
         }
 
-        float* tensor_data = (float*)buffers.getBuffer(std::string(input_blob_name);
+        float* tensor_data = (float*)buffers.getBuffer(std::string(input_blob_name));
         std::cerr << "---------------" << std::endl;
         for (int32_t i = 0; i < 30; i++) {
             std::cerr << "v:" << tensor_data[i] << "\t";
