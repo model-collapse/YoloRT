@@ -125,7 +125,9 @@ nmsAllClasses(const float nmsThresh,
 
     for (auto& boxes : splitBoxes)
     {
+        fprintf(stderr, "before:%f \n", boxes.size());
         boxes = nonMaximumSuppression(nmsThresh, boxes);
+        fprintf(stderr, "after:%f \n", boxes.size());
         result.insert(result.end(), boxes.begin(), boxes.end());
     }
     return result;
