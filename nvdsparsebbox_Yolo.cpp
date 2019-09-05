@@ -58,7 +58,7 @@ static void addBBoxProposal(const float bx, const float by, const float bw, cons
     NvDsInferParseObjectInfo bbi = convertBBox(bx, by, bw, bh, stride, netW, netH);
     if (((bbi.left + bbi.width) > netW) || ((bbi.top + bbi.height) > netH)) return;
 
-    fprintf("[%f, %f | %f, %f]\n", bx, by, bw, bh);
+    fprintf(stderr, "[%f, %f | %f, %f]\n", bx, by, bw, bh);
     bbi.detectionConfidence = maxProb;
     bbi.classId = maxIndex;
     binfo.push_back(bbi);
