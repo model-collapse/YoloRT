@@ -9,8 +9,7 @@
 #include "nvdsinfer_custom_impl.h"
 #include "nvdsparsebbox_Yolo.h"
 
-const char* CFG_PATH = "../../../model/darknet/yolov3_person.cfg";
-const char* WTS_PATH = "../../../model/darknet/yolov3_person_16000.weights";
+const char* MODEL_PATH = "../../../model/tensorrt/yolov3_person_16000.model.trt.bin";
 const int32_t batch_size = 1;
 
 const int32_t input_tensor_height = 640;
@@ -36,16 +35,16 @@ struct InferDeleter
     }
 };
 
-nvinfer1::ICudaEngine* initEngine(const char* cfg_path, const char* weight_path, nvinfer1::IBuilder* builder) {
-    NetworkInfo info;
-    info.networkType = "yolov3";
-    info.configFilePath = cfg_path;
-    info.wtsFilePath = weight_path;
-    info.deviceType = "kGPU";
-    info.inputBlobName = input_blob_name;
-    
-    Yolo yolo(info, builder);
-    return yolo.createEngine();
+nvinfer1::ICudaEngine* initEngine(const char* model_path，nvinfer1::IRuntime* runtime) {
+    std::ifstream ifile(model_path, std::ios::binary);
+    int32_t size;
+    ifile >> size;
+    model_data = new char[size + 4];
+    ifile.read(model_data, size);
+    ifile.close();
+
+    ICudaEngine* engine = runtime->deserializeCudaEngine(modelData, modelSize, nullptr);
+    return engine;
 }
 
 Logger gLogger;
@@ -62,8 +61,8 @@ int32_t main(int32_t argc, char** argv) {
     // creating image source
     ImageSource src("tcp://10.249.77.88:18964");
 
-    nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
-    nvinfer1::ICudaEngine* engine = initEngine(CFG_PATH, WTS_PATH, builder);
+    nvinfer1::IRuntime* runtime = createInferRuntime(gLogger);
+    nvinfer1::ICudaEngine* engine = initEngine(MODEL_PATH, runtime);
     auto ctx = engine->createExecutionContext();
 
     int32_t bsize = batch_size;
