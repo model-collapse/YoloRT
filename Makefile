@@ -52,10 +52,10 @@ all: $(TARGET_EXEC)
 	$(NVCC) -c -o $@ --compiler-options '-fPIC' $<
 
 $(TARGET_EXEC) : $(TARGET_OBJS) main.o
-	$(CC) -o $@  $(TARGET_OBJS) main.o $(LFLAGS)
+	$(CC) -o $@  main.o $(TARGET_OBJS) $(LFLAGS)
 
 $(CVT_EXEC) : $(TARGET_OBJS) cvt.o
-	$(CC) -o $@  $(TARGET_OBJS) cvt.o $(LFLAGS)
+	$(CC) -o $@  cvt.o $(TARGET_OBJS) $(LFLAGS)
 
 clean:
 	rm -rf $(TARGET_EXEC)
