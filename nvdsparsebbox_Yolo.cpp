@@ -237,6 +237,9 @@ decodeYoloV3Tensor(
                         maxIndex = i;
                     }
                 }
+
+                std::cerr << "mp: " << maxProb << "\t";
+
                 maxProb = objectness * maxProb;
 
                 if (maxProb > probThresh)
@@ -246,6 +249,8 @@ decodeYoloV3Tensor(
             }
         }
     }
+
+    std::cerr << std::endl;
     return binfo;
 }
 
