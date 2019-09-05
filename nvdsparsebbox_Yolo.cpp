@@ -199,6 +199,9 @@ decodeYoloV3Tensor(
     const uint numOutputClasses, const float probThresh, const uint& netW,
     const uint& netH)
 {
+    float avgMaxProb = 0;
+    float avgObjectness = 0;
+
     fprintf(stderr, "grid_size, stride = (%d, %d)\n", gridSize, stride);
     fprintf(stderr, "thres = %f\n", probThresh);
     std::vector<NvDsInferParseObjectInfo> binfo;
@@ -241,9 +244,8 @@ decodeYoloV3Tensor(
                     }
                 }
 
-                std::cerr << "mp: " << maxProb << "\t";
-                std::cerr << "obj: " << objectness << "\t";
-                //maxProb = objectness * maxProb;
+                avgMaxProb += maxProb;
+                avgObjectness += objectness;
 
                 if (maxProb > probThresh)
                 {
@@ -251,6 +253,12 @@ decodeYoloV3Tensor(
                 }
             }
         }
+
+        avgMaxProb /= (gridSize * gridSize * numBBoxes);
+        avgObjectness /= (gridSize * gridSize * numBBoxes);
+
+        std::cerr << "mp: " << avgMaxProb << "\t";
+        std::cerr << "obj: " << avgObjectness << "\t";
     }
 
     std::cerr << std::endl;
