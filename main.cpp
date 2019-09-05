@@ -39,7 +39,7 @@ nvinfer1::ICudaEngine* initEngine(const char* model_path, nvinfer1::IRuntime* ru
     std::ifstream ifile(model_path, std::ios::binary);
     int64_t size;
     ifile >> size;
-    model_data = new char[size + 4];
+    char* model_data = new char[size + 4];
     ifile.read(model_data, size);
     ifile.close();
 
