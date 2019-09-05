@@ -99,10 +99,12 @@ int32_t main(int32_t argc, char** argv) {
     while (true) {
         frames ++;
         auto img = src.recv();
-        cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3, buffers.getBuffer(std::string(input_blob_name)));
+        cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3);
         //cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3);
         fprintf(stderr, "[frame %d]resizing from (%d, %d) to (%d, %d)\n", frames, img.rows, img.cols, img_resized.rows, img_resized.cols);
         cv::resize(img, img_resized, img_resized.size(), 0, 0, CV_INTER_CUBIC);
+
+        std::memcpy(buffers.getBuffer(std::string(input_blob_name)), img_resized.data, input_tensor_height * input_tensor_width * input_tensor_depth * sizeof(float));
 
         auto status = ctx->execute(batch_size, buffers.getDeviceBindings().data());
         if (!status) {
