@@ -46,6 +46,7 @@ int32_t main(int32_t argc, char** argv) {
     std::ofstream ofile("yolov3_person_16000.model.trt.bin", std::ios::binary);
     
     int64_t size = serializedModel->size();
+    std::cerr << "size = " << size << endl;
     ofile.write((char*)&size, sizeof(size));
     ofile.write((char*)serializedModel->data(), serializedModel->size());
     ofile.close();

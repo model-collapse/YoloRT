@@ -9,7 +9,7 @@
 #include "nvdsinfer_custom_impl.h"
 #include "nvdsparsebbox_Yolo.h"
 
-const char* MODEL_PATH = "../../../model/tensorrt/yolov3_person_16000.model.trt.bin";
+const char* MODEL_PATH = "../../../model/tensorRT/yolov3_person_16000.model.trt.bin";
 const int32_t batch_size = 1;
 
 const int32_t input_tensor_height = 640;
@@ -37,13 +37,21 @@ struct InferDeleter
 
 nvinfer1::ICudaEngine* initEngine(const char* model_path, nvinfer1::IRuntime* runtime) {
     std::ifstream ifile(model_path, std::ios::binary);
+    if (!ifile) {
+	std::cerr << "file does not exist" << endl;
+    	return NULL;
+    }
+    
     int64_t size;
-    ifile >> size;
+    std::cerr << "allocating " << size << endl;
+    ifile.read((char*)&size, sizeof(size));
+    std::cerr << "allocating " << size << endl;
     char* model_data = new char[size + 4];
     ifile.read(model_data, size);
     ifile.close();
 
     ICudaEngine* engine = runtime->deserializeCudaEngine(model_data, size, nullptr);
+    delete model_data;
     return engine;
 }
 
