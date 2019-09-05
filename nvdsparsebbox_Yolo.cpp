@@ -219,8 +219,8 @@ decodeYoloV3Tensor(
                 const float bh
                     = ph * detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 3)];
 
-                const float objectness
-                    = detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 4)];
+                //const float objectness
+                //    = detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 4)];
 
                 float maxProb = 0.0f;
                 int maxIndex = -1;
@@ -238,9 +238,8 @@ decodeYoloV3Tensor(
                     }
                 }
 
-                std::cerr << "mp: " << maxProb << "\t";
-
-                maxProb = objectness * maxProb;
+                //std::cerr << "mp: " << maxProb << "\t";
+                //maxProb = objectness * maxProb;
 
                 if (maxProb > probThresh)
                 {
