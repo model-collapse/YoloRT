@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <new>
+#include "nvdsinfer.h"
 
 template <typename AllocFunc, typename FreeFunc>
 class GenericBuffer
@@ -117,19 +118,19 @@ class UnifiedBufManager {
             size_t allocationSize = static_cast<size_t>(mBatchSize) * vol * elementSize;
             std::unique_ptr<ManagedBuffer> manBuf{new ManagedBuffer(allocationSize)};
             mDeviceBindings.emplace_back(manBuf->data());
-            mManagedBuffers.emplace_back(std::move(manBuf));
             NvDsInferLayerInfo layerInfo;
             layerInfo.buffer = manBuf->data();
-            layerInfo.dataType = dataType;
+            layerInfo.dataType = NvDsInferDataType(int(dataType));
             layerInfo.layerName = mEngine->getBindingName(i);
             layerInfo.bindingIndex = i;
             layerInfo.dims.numDims = dims.nbDims;
-            layerInfo.numElements = 1;
+            layerInfo.dims.numElements = 1;
             layerInfo.isInput = 0;
-            for (int32_t i = 0; i < layerInfo.dims.numDims; i++) {
+            for (int32_t i = 0; i < int32_t(layerInfo.dims.numDims); i++) {
                 layerInfo.dims.d[i] = dims.d[i];
-                layerInfo.numElements *= dims.d[i];
+                layerInfo.dims.numElements *= dims.d[i];
             }
+            mManagedBuffers.emplace_back(std::move(manBuf));
             mLayerInfos.emplace_back(layerInfo);
         }
     }
@@ -185,8 +186,10 @@ class UnifiedBufManager {
     NvDsInferLayerInfo getLayerInfo(const std::string& tensorName) const 
     {
         int index = mEngine->getBindingIndex(tensorName.c_str());
-        if (index == -1)
-            return nullptr;
+        if (index == -1) {
+            NvDsInferLayerInfo emp;
+	    return emp;
+	}
         return mLayerInfos[index];
     }
     

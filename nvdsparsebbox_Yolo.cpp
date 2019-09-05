@@ -19,41 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-#include "nvdsinfer_custom_impl.h"
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <unordered_map>
-
-static const int NUM_CLASSES_YOLO = 1;
-
-extern "C" bool NvDsInferParseCustomYoloV3(
-    std::vector<NvDsInferLayerInfo> const& outputLayersInfo,
-    NvDsInferNetworkInfo const& networkInfo,
-    NvDsInferParseDetectionParams const& detectionParams,
-    std::vector<NvDsInferParseObjectInfo>& objectList);
-
-extern "C" bool NvDsInferParseCustomYoloV3Tiny(
-    std::vector<NvDsInferLayerInfo> const& outputLayersInfo,
-    NvDsInferNetworkInfo const& networkInfo,
-    NvDsInferParseDetectionParams const& detectionParams,
-    std::vector<NvDsInferParseObjectInfo>& objectList);
-
-extern "C" bool NvDsInferParseCustomYoloV2(
-    std::vector<NvDsInferLayerInfo> const& outputLayersInfo,
-    NvDsInferNetworkInfo const& networkInfo,
-    NvDsInferParseDetectionParams const& detectionParams,
-    std::vector<NvDsInferParseObjectInfo>& objectList);
-
-extern "C" bool NvDsInferParseCustomYoloV2Tiny(
-    std::vector<NvDsInferLayerInfo> const& outputLayersInfo,
-    NvDsInferNetworkInfo const& networkInfo,
-    NvDsInferParseDetectionParams const& detectionParams,
-    std::vector<NvDsInferParseObjectInfo>& objectList);
+#include "nvdsparsebbox_Yolo.h"
 
 static unsigned clamp(const uint val, const uint minVal, const uint maxVal)
 {
@@ -230,6 +196,8 @@ decodeYoloV3Tensor(
     const uint numOutputClasses, const float probThresh, const uint& netW,
     const uint& netH)
 {
+    fprintf(stderr, "grid_size, stride = (%d, %d)\n", gridSize, stride);
+    fprintf(stderr, "thres = %f\n", probThresh);
     std::vector<NvDsInferParseObjectInfo> binfo;
     for (uint y = 0; y < gridSize; ++y)
     {
@@ -295,7 +263,7 @@ SortLayers(const std::vector<NvDsInferLayerInfo> & outputLayersInfo)
     return outLayers;
 }
 
-static bool NvDsInferParseYoloV3(
+extern "C" bool NvDsInferParseYoloV3(
     std::vector<NvDsInferLayerInfo> const& outputLayersInfo,
     NvDsInferNetworkInfo const& networkInfo,
     NvDsInferParseDetectionParams const& detectionParams,
@@ -305,7 +273,7 @@ static bool NvDsInferParseYoloV3(
 {
     const uint kNUM_BBOXES = 3;
     static const float kNMS_THRESH = 0.3f;
-    static const float kPROB_THRESH = 0.7f;
+    static const float kPROB_THRESH = 0.15f;
 
     const std::vector<const NvDsInferLayerInfo*> sortedLayers =
         SortLayers (outputLayersInfo);

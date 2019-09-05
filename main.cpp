@@ -6,6 +6,8 @@
 #include "recv.h"
 #include "yolo.h"
 #include "jbuf.h"
+#include "nvdsinfer_custom_impl.h"
+#include "nvdsparsebbox_Yolo.h"
 
 const char* CFG_PATH = "../../../model/darknet/yolov3_person.cfg";
 const char* WTS_PATH = "../../../model/darknet/yolov3_person_16000.weights";
@@ -16,11 +18,11 @@ const int32_t input_tensor_width = 640;
 const int32_t input_tensor_depth = 3;
 
 const char* input_blob_name = "data";
-const char[][20] output_blob_names = {
+const char output_blob_names[][20] = {
     "yolo_83",
     "yolo_95",
     "yolo_107"
-}
+};
 
 struct InferDeleter
 {
@@ -73,10 +75,12 @@ int32_t main(int32_t argc, char** argv) {
     }
 
     std::vector<NvDsInferLayerInfo> layerInfo;
-    for (int_t i = 0; i < 3; i++) {
+    for (int32_t i = 0; i < 3; i++) {
         NvDsInferLayerInfo layer = buffers.getLayerInfo(output_blob_names[i]);
         layerInfo.emplace_back(layer);
     }
+
+    std::cerr << "#layers = " << layerInfo.size() << endl;
 
     static const std::vector<float> kANCHORS = {
         12, 23,  21,  41, 34,  54,  32,  112,  53, 
@@ -117,6 +121,8 @@ int32_t main(int32_t argc, char** argv) {
             std::cerr << "fail to call NvDsInferParseYoloV3" << std::endl;
             exit(1);
         }
+
+	std::cerr << "[det] " << objs.size() << " were found" << endl;
 
         for (auto obj : objs) {
             mark_a_people(img, obj);
