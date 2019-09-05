@@ -24,6 +24,8 @@ const char output_blob_names[][20] = {
     "yolo_107"
 };
 
+Logger gLogger;
+
 nvinfer1::ICudaEngine* initEngine(const char* cfg_path, const char* weight_path, nvinfer1::IBuilder* builder) {
     NetworkInfo info;
     info.networkType = "yolov3";
