@@ -30,8 +30,7 @@ LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda/lib64 -lcudart -
 LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 
 INCS:= $(wildcard *.h)
-BASE_SRCFILES:= 
-           recv.cpp \
+BASE_SRCFILES:= recv.cpp \
            nvdsinfer_yolo_engine.cpp \
            nvdsparsebbox_Yolo.cpp   \
            yoloPlugins.cpp    \
