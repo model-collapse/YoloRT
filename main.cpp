@@ -99,12 +99,14 @@ int32_t main(int32_t argc, char** argv) {
     while (true) {
         frames ++;
         auto img = src.recv();
-        cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3);
+        cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_8UC3);
         //cv::Mat img_resized(input_tensor_height, input_tensor_width, CV_32FC3);
         fprintf(stderr, "[frame %d]resizing from (%d, %d) to (%d, %d)\n", frames, img.rows, img.cols, img_resized.rows, img_resized.cols);
         cv::resize(img, img_resized, img_resized.size(), 0, 0, CV_INTER_CUBIC);
+        cv::Mat img_float;
+        img_resized.convertTo(img_float, CV_32FC3);
 
-        std::memcpy(buffers.getBuffer(std::string(input_blob_name)), img_resized.data, input_tensor_height * input_tensor_width * input_tensor_depth * sizeof(float));
+        std::memcpy(buffers.getBuffer(std::string(input_blob_name)), img_float.data, batch_size * input_tensor_height * input_tensor_width * input_tensor_depth * sizeof(float));
 
         auto status = ctx->execute(batch_size, buffers.getDeviceBindings().data());
         if (!status) {
@@ -124,7 +126,7 @@ int32_t main(int32_t argc, char** argv) {
             exit(1);
         }
 
-	std::cerr << "[det] " << objs.size() << " were found" << endl;
+	    std::cerr << "[det] " << objs.size() << " were found" << endl;
 
         for (auto obj : objs) {
             mark_a_people(img, obj);
