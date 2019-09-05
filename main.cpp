@@ -35,7 +35,7 @@ struct InferDeleter
     }
 };
 
-nvinfer1::ICudaEngine* initEngine(const char* model_path，nvinfer1::IRuntime* runtime) {
+nvinfer1::ICudaEngine* initEngine(const char* model_path, nvinfer1::IRuntime* runtime) {
     std::ifstream ifile(model_path, std::ios::binary);
     int64_t size;
     ifile >> size;
@@ -43,7 +43,7 @@ nvinfer1::ICudaEngine* initEngine(const char* model_path，nvinfer1::IRuntime* r
     ifile.read(model_data, size);
     ifile.close();
 
-    ICudaEngine* engine = runtime->deserializeCudaEngine(modelData, modelSize, nullptr);
+    ICudaEngine* engine = runtime->deserializeCudaEngine(model_data, size, nullptr);
     return engine;
 }
 
