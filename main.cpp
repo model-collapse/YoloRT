@@ -105,6 +105,7 @@ int32_t main(int32_t argc, char** argv) {
         cv::resize(img, img_resized, img_resized.size(), 0, 0, CV_INTER_CUBIC);
         cv::Mat img_float;
         img_resized.convertTo(img_float, CV_32FC3);
+        img_float /= 255.0;
 
         std::memcpy(buffers.getBuffer(std::string(input_blob_name)), img_float.data, batch_size * input_tensor_height * input_tensor_width * input_tensor_depth * sizeof(float));
 
