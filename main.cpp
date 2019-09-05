@@ -107,7 +107,18 @@ int32_t main(int32_t argc, char** argv) {
         img_resized.convertTo(img_float, CV_32FC3);
         img_float /= 255.0;
 
-        std::memcpy(buffers.getBuffer(std::string(input_blob_name)), img_float.data, batch_size * input_tensor_height * input_tensor_width * input_tensor_depth * sizeof(float));
+        // axis reorder
+        float* p = (float*)buffers.getBuffer(std::string(input_blob_name));
+        for (int32_t c = 0; c < input_tensor_depth; c++) {
+            for (int32_t y = 0; y < input_tensor_height; y++) {
+                for (int32_t x = 0; x < input_tensor_width; x++) {
+                    *p = img_float.at<float>(y, x, c);
+                    p++;
+                }
+            }
+        }
+
+        //std::memcpy(buffers.getBuffer(std::string(input_blob_name)), img_float.data, batch_size * input_tensor_height * input_tensor_width * input_tensor_depth * sizeof(float));
 
         auto status = ctx->execute(batch_size, buffers.getDeviceBindings().data());
         if (!status) {
@@ -143,5 +154,9 @@ int32_t main(int32_t argc, char** argv) {
         char pathBuf[30];
         sprintf(pathBuf, "dump/frame_%d.jpg", frames);
         cv::imwrite(pathBuf, img);
+
+        if (frames >= 100) {
+            break;
+        }
     }
 }
