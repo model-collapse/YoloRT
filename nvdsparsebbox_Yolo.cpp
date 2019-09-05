@@ -223,7 +223,7 @@ decodeYoloV3Tensor(
                     = ph * detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 3)];
 
                 const float objectness
-                //    = detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 4)];
+                    = detections[bbindex + numGridCells * (b * (5 + numOutputClasses) + 4)];
 
                 float maxProb = 0.0f;
                 int maxIndex = -1;
