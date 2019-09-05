@@ -253,13 +253,13 @@ decodeYoloV3Tensor(
                 }
             }
         }
-
-        avgMaxProb /= (gridSize * gridSize * numBBoxes);
-        avgObjectness /= (gridSize * gridSize * numBBoxes);
-
-        std::cerr << "mp: " << avgMaxProb << "\t";
-        std::cerr << "obj: " << avgObjectness << "\t";
     }
+
+    avgMaxProb /= (gridSize * gridSize * numBBoxes);
+    avgObjectness /= (gridSize * gridSize * numBBoxes);
+
+    std::cerr << "mp: " << avgMaxProb << "\t";
+    std::cerr << "obj: " << avgObjectness << "\t";
 
     std::cerr << std::endl;
     return binfo;
