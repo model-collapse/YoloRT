@@ -42,7 +42,7 @@ int32_t main(int32_t argc, char** argv) {
 
     IHostMemory *serializedModel = engine->serialize();
     std::ofstream ofile("yolov3_person_16000.model.trt.bin", std::ios::binary);
-    osfile.write((char*)serializedModel->data(), serializedModel->size());
+    ofile.write((char*)serializedModel->data(), serializedModel->size());
     ofile.close();
     engine->destroy();
 }
