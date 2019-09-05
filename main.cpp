@@ -37,7 +37,7 @@ struct InferDeleter
 
 nvinfer1::ICudaEngine* initEngine(const char* model_path，nvinfer1::IRuntime* runtime) {
     std::ifstream ifile(model_path, std::ios::binary);
-    int32_t size;
+    int64_t size;
     ifile >> size;
     model_data = new char[size + 4];
     ifile.read(model_data, size);
