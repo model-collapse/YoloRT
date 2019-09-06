@@ -51,8 +51,8 @@ all: $(TARGET_EXEC)
 %.o: %.cu $(INCS) Makefile
 	$(NVCC) -c -o $@ --compiler-options '-fPIC' $<
 
-$(TARGET_EXEC) : $(TARGET_OBJS) main.o
-	$(CC) -o $@  main.o $(TARGET_OBJS) $(LFLAGS)
+$(TARGET_EXEC) : $(TARGET_OBJS) main_comp.o
+	$(CC) -o $@  main_comp.o $(TARGET_OBJS) $(LFLAGS)
 
 $(CVT_EXEC) : $(TARGET_OBJS) cvt.o
 	$(CC) -o $@  cvt.o $(TARGET_OBJS) $(LFLAGS)
