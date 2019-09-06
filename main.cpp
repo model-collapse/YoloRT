@@ -116,7 +116,7 @@ int32_t main(int32_t argc, char** argv) {
         for (int32_t c = 0; c < input_tensor_depth; c++) {
             for (int32_t y = 0; y < input_tensor_height; y++) {
                 for (int32_t x = 0; x < input_tensor_width; x++) {
-                    *p = img_float.at<float>(y, x)[c];
+                    *p = img_float.at<cv::Vec3f>(y, x)[c];
                     p++;
                 }
             }
