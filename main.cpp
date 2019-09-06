@@ -109,6 +109,10 @@ int32_t main(int32_t argc, char** argv) {
 
         // axis reorder
         float* p = (float*)buffers.getBuffer(std::string(input_blob_name));
+        if (NULL == p) {
+            std::cerr << "null pointer of input buffer" << std::endl;
+        }
+
         for (int32_t c = 0; c < input_tensor_depth; c++) {
             for (int32_t y = 0; y < input_tensor_height; y++) {
                 for (int32_t x = 0; x < input_tensor_width; x++) {

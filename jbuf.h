@@ -122,6 +122,7 @@ class UnifiedBufManager {
             layerInfo.buffer = manBuf->data();
             layerInfo.dataType = NvDsInferDataType(int(dataType));
             layerInfo.layerName = mEngine->getBindingName(i);
+            std::cerr << "binding layer@" << i << ": " << layerInfo.layerName << endl;
             layerInfo.bindingIndex = i;
             layerInfo.dims.numDims = dims.nbDims;
             layerInfo.dims.numElements = 1;
