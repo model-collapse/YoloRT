@@ -246,7 +246,8 @@ decodeYoloV3Tensor(
 
                 avgMaxProb += maxProb;
                 avgObjectness += objectness;
-
+                
+                maxProb *= objectness;
                 if (maxProb > probThresh)
                 {
                     addBBoxProposal(bx, by, bw, bh, stride, netW, netH, maxIndex, maxProb, binfo);
