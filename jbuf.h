@@ -1,3 +1,6 @@
+#ifndef _JBUF_H_
+#define _JBUF_H_
+
 #include "NvInfer.h"
 #include "half.h"
 #include "common.h"
@@ -201,3 +204,5 @@ private:
     std::vector<void*> mDeviceBindings;                          //!< The vector of device buffers needed for engine execution
     std::vector<NvDsInferLayerInfo> mLayerInfos;
 };
+
+#endif

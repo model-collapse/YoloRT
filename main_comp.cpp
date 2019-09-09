@@ -42,7 +42,7 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
 
     int32_t text_top = person.loc.top - margin - text_size.height;
     if (text_top < 0) {
-        return
+        return;
     }
     int32_t text_left = person.loc.left;
     int32_t text_height = anchor + text_size.height + margin * 2;
@@ -50,7 +50,7 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
 
     const static cv::Scalar color(0, 255, 255);
     const static cv::Scalar txt_color(0, 0, 0);
-    cv::rectangle(canvas, cv::Rect(text_left, text_top, text_width, text_height), color, CV_FILL);
+    cv::rectangle(canvas, cv::Rect(text_left, text_top, text_width, text_height), color, CV_FILLED);
 
     cv::putText(canvas, text, cv::Point(text_left + margin, text_top - margin - anchor), font, font_scale, txt_color, thickness);
 }

@@ -31,8 +31,10 @@ LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 
 INCS:= $(wildcard *.h)
 BASE_SRCFILES:= recv.cpp \
-           nvdsinfer_yolo_engine.cpp \
+	   activity_detection.cpp    \
+           people_counting.cpp    \
            nvdsparsebbox_Yolo.cpp   \
+           nvdsinfer_yolo_engine.cpp \
            yoloPlugins.cpp    \
            trt_utils.cpp              \
            yolo.cpp              \

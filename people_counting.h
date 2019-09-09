@@ -7,6 +7,17 @@
 #include "yolo.h"
 #include "jbuf.h"
 #include "img.h"
+#include "nvdsinfer_custom_impl.h"
+
+const std::vector<float> kANCHORS = {
+    12, 23,  21,  41, 34,  54,  32,  112,  53, 
+    78, 75,  120, 58, 196, 104, 288, 184,  322
+};
+
+const std::vector<std::vector<int>> kMASKS = {
+    {6, 7, 8},
+    {3, 4, 5},
+    {0, 1, 2}};
 
 class PeopleDetector {
 public:
@@ -14,24 +25,10 @@ public:
     static const int32_t input_tensor_width = 640;
     static const int32_t input_tensor_depth = 3;
 
-    static const char* input_blob_name = "data";
-    static const char output_blob_names[][20] = {
-        "yolo_83",
-        "yolo_95",
-        "yolo_107"
-    };
+    static constexpr const char* input_blob_name = "data";
+    std::vector<std::string> output_blob_names;
 
-    static const std::vector<float> kANCHORS = {
-        12, 23,  21,  41, 34,  54,  32,  112,  53, 
-        78, 75,  120, 58, 196, 104, 288, 184,  322
-    };
-
-    static const std::vector<std::vector<int>> kMASKS = {
-        {6, 7, 8},
-        {3, 4, 5},
-        {0, 1, 2}};
-
-    PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, nvinfer1::ILogger logger);
+    PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, nvinfer1::ILogger& logger);
     ~PeopleDetector();
 
     std::vector<NvDsInferParseObjectInfo> detect(cv::Mat img);
@@ -43,7 +40,9 @@ private:
 
     UnifiedBufManager* buffers;
 
+    std::vector<NvDsInferLayerInfo> layer_info;
+
     int32_t batch_size;
-}
+};
 
 #endif

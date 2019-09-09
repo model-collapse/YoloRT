@@ -15,14 +15,28 @@ struct InferDeleter
     }
 };
 
-PeopleDetector::PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, nvinfer1::ILogger logger) {
+PeopleDetector::PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
     
+    std::vector<std::string> output_blob_names = {
+        "yolo_83",
+        "yolo_95",
+        "yolo_107"
+    };
+
+    this->output_blob_names = output_blob_names;
+
     auto builder = nvinfer1::createInferBuilder(logger);
     this->engine = this->init_engine(cfg_path, wts_path, builder);
     this->ctx = this->engine->createExecutionContext();
 
     this->buffers = new UnifiedBufManager(std::shared_ptr<nvinfer1::ICudaEngine>(engine, InferDeleter()), batch_size);
+
+    for (int32_t i = 0; i < 3; i++) {
+        NvDsInferLayerInfo layer = this->buffers->getLayerInfo(output_blob_names[i]);
+        this->layer_info.emplace_back(layer);
+    }
+
 }
 
 nvinfer1::ICudaEngine* PeopleDetector::init_engine(std::string cfg_path, std::string weight_path, nvinfer1::IBuilder* builder) {
@@ -40,21 +54,21 @@ nvinfer1::ICudaEngine* PeopleDetector::init_engine(std::string cfg_path, std::st
 std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     std::vector<NvDsInferParseObjectInfo> objs;
 
-    float* p = (float*)this->buffers.getBuffer(std::string(input_blob_name));
+    float* p = (float*)this->buffers->getBuffer(std::string(input_blob_name));
     if (NULL == p) {
         std::cerr << "null pointer of input buffer" << std::endl;
     }
 
     mat_8u3c_to_darknet_blob(img, input_tensor_height, input_tensor_width, input_tensor_depth, p);
-    auto status = this->ctx->execute(batch_size, buffers.getDeviceBindings().data());
+    auto status = this->ctx->execute(batch_size, buffers->getDeviceBindings().data());
     if (!status) {
         std::cerr << "execution failed!" << std::endl;
         return objs;    
     }
 
     NvDsInferNetworkInfo networkInfo {
-        .width = img.cols,
-        .height = img.rows,
+        .width = (int32_t)img.cols,
+        .height = (int32_t)img.rows,
         .channels = 3,
     };
 
@@ -62,7 +76,7 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         .numClassesConfigured = NUM_CLASSES_YOLO,
     };
     
-    bool res = NvDsInferParseYoloV3(layerInfo, networkInfo, params, objs, kANCHORS, kMASKS);
+    bool res = NvDsInferParseYoloV3(this->layer_info, networkInfo, params, objs, kANCHORS, kMASKS);
     if (!res) {
         std::cerr << "fail to call NvDsInferParseYoloV3" << std::endl;
     }

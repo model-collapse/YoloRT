@@ -1,3 +1,6 @@
+#ifndef _NVDS_YOLO_PARSE_BOX_H_
+#define _NVDS_YOLO_PARSE_BOX_H_
+
 #include "nvdsinfer_custom_impl.h"
 #include <algorithm>
 #include <cassert>
@@ -40,3 +43,5 @@ extern "C" bool NvDsInferParseYoloV3(
     std::vector<NvDsInferParseObjectInfo>& objectList,
     const std::vector<float> &anchors,
     const std::vector<std::vector<int>> &masks);
+
+#endif
