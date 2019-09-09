@@ -17,6 +17,7 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
     this->batch_size = batch_size;
 
     auto builder = nvinfer1::createInferBuilder(logger);
+    builder->setMaxBatchsize(MAX_BATCH_SIZE);
     this->engine = this->init_engine(cfg_path, wts_path, builder);
     this->ctx = this->engine->createExecutionContext();
 
