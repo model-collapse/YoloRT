@@ -366,6 +366,7 @@ nvinfer1::INetworkDefinition *Yolo::createYoloNetwork (
             softmax->setName(bname.c_str());
             previous = softmax->getOutput(0);
             assert(previous != nullptr);
+            previous->setName(bname);
             std::string outputVol = dimsToString(previous->getDimensions());
             tensorOutputs.push_back(softmax->getOutput(0));
             printLayerInfo(layerIndex, "softmax", inputVol, outputVol, std::to_string(weightPtr));
