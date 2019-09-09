@@ -85,14 +85,14 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     float xScale = (float)img.cols / input_tensor_width;
     float yScale = (float)img.rows / input_tensor_height;
     calib_objs.resize(objs.size());
-    for (int32_t i = 0; i < objs.size(); i++) {
+    for (int32_t i = 0; i < (int32_t)objs.size(); i++) {
         NvDsInferParseObjectInfo obj = objs[i];
         NvDsInferParseObjectInfo nf{
             .classId = obj.classId,
-            .left = (int)(obj.left * xScale),
-            .top = (int)(obj.top * yScale),
-            .width = (int)(obj.width * xScale),
-            .height = (int)(obj.height * yScale),
+            .left = (uint32_t)(obj.left * xScale),
+            .top = (uint32_t)(obj.top * yScale),
+            .width = (uint32_t)(obj.width * xScale),
+            .height = (uint32_t)(obj.height * yScale),
             .detectionConfidence = obj.detectionConfidence,
         };
 
