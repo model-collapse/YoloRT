@@ -29,7 +29,7 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
 
     auto font = cv::FONT_HERSHEY_SIMPLEX;
     float font_scale = 0.5;
-    float thickness = 2;
+    float thickness = 1;
 
     char text_buf[MAX_TEXT_LEN];
     sprintf(text_buf, "%s:%03f", person.activity.c_str(), person.prob);
@@ -40,7 +40,7 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
     
     const int32_t margin = 3;
 
-    int32_t text_top = person.loc.top + margin;
+    int32_t text_top = person.loc.top;
     if (text_top < 0) {
         return;
     }
@@ -52,7 +52,7 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
     const static cv::Scalar txt_color(0, 0, 0);
     cv::rectangle(canvas, cv::Rect(text_left, text_top, text_width, text_height), color, CV_FILLED);
 
-    cv::putText(canvas, text, cv::Point(text_left + margin, text_top - margin - anchor), font, font_scale, txt_color, thickness);
+    cv::putText(canvas, text, cv::Point(text_left + margin, text_top + text_height - margin - anchor), font, font_scale, txt_color, thickness);
 }
 
 int32_t main(int32_t argc, char** argv) {
