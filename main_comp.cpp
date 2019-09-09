@@ -11,7 +11,7 @@ const char* PC_WTS_PATH = "../../../model/darknet/yolov3_person_16000.weights";
 const int32_t PC_BATCH_SIZE = 1;
 
 const char* AD_CFG_PATH = "../../../model/darknet/wwdarknet53v2.cfg";
-const char* AD_WTS_PATH = "../../../model/darknet/wwdarknet53v2_50000.dat";
+const char* AD_WTS_PATH = "../../../model/darknet/wwdarknet53v2_50000.weights";
 const char* AD_NAME_PATH = "../../../model/darknet/activity_wework.names";
 const int32_t ACT_DET_BATCH_SIZE = 16;
 
@@ -59,8 +59,8 @@ int32_t main(int32_t argc, char** argv) {
     fprintf(stderr, "haha\n");
     fflush(stderr);
 
-    PeopleDetector pd(PC_CFG_PATH, PC_WTS_PATH, PC_BATCH_SIZE, gLogger);
     ActivityDetector ad(AD_CFG_PATH, AD_WTS_PATH, AD_NAME_PATH, ACT_DET_BATCH_SIZE, gLogger);
+    PeopleDetector pd(PC_CFG_PATH, PC_WTS_PATH, PC_BATCH_SIZE, gLogger);
 
     // creating image source
     ImageSource src("tcp://10.249.77.88:18964");
