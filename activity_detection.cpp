@@ -20,8 +20,8 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
     builder->setMaxBatchSize(MAX_BATCH_SIZE);
     this->engine = this->init_engine(cfg_path, wts_path, builder);
     this->ctx = this->engine->createExecutionContext();
-
-    assert(batch_size < this->engine->getMaxBatchSize());
+    std::cerr << "max_batch_size = " << this->engine->getMaxBatchSize() << std::endl;
+    assert(batch_size <= this->engine->getMaxBatchSize());
 
     this->buffers = new UnifiedBufManager(std::shared_ptr<nvinfer1::ICudaEngine>(engine, InferDeleter()), this->batch_size);
 
