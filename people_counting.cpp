@@ -53,6 +53,7 @@ nvinfer1::ICudaEngine* PeopleDetector::init_engine(std::string cfg_path, std::st
 
 std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     std::vector<NvDsInferParseObjectInfo> objs;
+    std::vector<NvDsInferParseObjectInfo> calib_objs;
 
     float* p = (float*)this->buffers->getBuffer(std::string(input_blob_name));
     if (NULL == p) {
@@ -67,8 +68,8 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     }
 
     NvDsInferNetworkInfo networkInfo {
-        .width = (int32_t)img.cols,
-        .height = (int32_t)img.rows,
+        .width = input_tensor_width,
+        .height = input_tensor_height,
         .channels = 3,
     };
 
@@ -81,7 +82,24 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         std::cerr << "fail to call NvDsInferParseYoloV3" << std::endl;
     }
 
-    return objs;
+    float xScale = (float)img.cols / input_tensor_width;
+    float yScale = (float)img.rows / input_tensor_height;
+    calib_objs.resize(objs.size());
+    for (int32_t i = 0; i < objs.size(); i++) {
+        NvDsInferParseObjectInfo obj = objs[i];
+        NvDsInferParseObjectInfo nf{
+            .classId = obj.classId,
+            .left = (int)(obj.left * xScale),
+            .right = (int)(obj.top * yScale),
+            .width = (int)(obj.width * xScale),
+            .height = (int)(obj.height * yScale),
+            .detectionConfidence = obj.detectionConfidence,
+        };
+
+        calib_objs[i] = nf;
+    }
+
+    return calib_objs;
 }
 
 PeopleDetector::~PeopleDetector() {

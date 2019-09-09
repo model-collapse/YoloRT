@@ -40,7 +40,7 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
     
     const int32_t margin = 3;
 
-    int32_t text_top = person.loc.top - margin - text_size.height;
+    int32_t text_top = person.loc.top + margin;
     if (text_top < 0) {
         return;
     }
