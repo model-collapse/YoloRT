@@ -361,13 +361,18 @@ nvinfer1::INetworkDefinition *Yolo::createYoloNetwork (
         {
             std::string inputVol = dimsToString(previous->getDimensions());
             nvinfer1::ISoftMaxLayer* softmax = network->addSoftMax(*previous);
-            softmax->setName(("softmax_" + std::to_string(i)).c_str());
+            std::string bname = "softmax_" + std::to_string(i);
+            softmax->setName(bname.c_str());
             previous = softmax->getOutput(0);
             assert(previous != nullptr);
             std::string outputVol = dimsToString(previous->getDimensions());
             tensorOutputs.push_back(softmax->getOutput(0));
             printLayerInfo(layerIndex, "softmax", inputVol, outputVol, std::to_string(weightPtr));
-	    network->markOutput(*previous);
+	        TensorInfo& curSoftMaxTensor = m_OutputTensors.at(outputTensorCount);
+            curSoftMaxTensor.blobName = bname;
+
+            network->markOutput(*previous);
+            outputTensorCount++;
         }
         else
         {
@@ -519,6 +524,9 @@ void Yolo::parseConfigBlocks()
                 ? outputTensor.masks.size()
                 : std::stoul(trim(block.at("num")));
             outputTensor.numClasses = std::stoul(block.at("classes"));
+            m_OutputTensors.push_back(outputTensor);
+        } else if(block.at("type") == "softmax"){
+            TensorInfo outputTensor;
             m_OutputTensors.push_back(outputTensor);
         }
     }
