@@ -90,7 +90,7 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         NvDsInferParseObjectInfo nf{
             .classId = obj.classId,
             .left = (int)(obj.left * xScale),
-            .right = (int)(obj.top * yScale),
+            .top = (int)(obj.top * yScale),
             .width = (int)(obj.width * xScale),
             .height = (int)(obj.height * yScale),
             .detectionConfidence = obj.detectionConfidence,
