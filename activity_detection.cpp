@@ -34,6 +34,8 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
         }
     }
     ifs.close();
+
+    std::cerr << "#classes = " << this->names.size() << std::endl;
 }
 
 nvinfer1::ICudaEngine* ActivityDetector::init_engine(std::string cfg_path, std::string weight_path, nvinfer1::IBuilder* builder) {
@@ -73,6 +75,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
         }
 
         float* res = (float*)this->buffers->getBuffer(std::string(output_blob_name));
+        assert(res != NULL);
         for (int32_t k = 0; k < cnt; k++) {
             int32_t max_id = 0;
             for (int32_t i = 0; i < (int32_t)this->names.size(); i++) {
