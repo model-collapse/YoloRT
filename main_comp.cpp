@@ -84,7 +84,7 @@ int32_t main(int32_t argc, char** argv) {
         sprintf(pathBuf, "dump/frame_%d.jpg", frames);
         cv::imwrite(pathBuf, img);
 
-        if (frames >= 100) {
+        if (frames >= 500) {
             break;
         }
     }
