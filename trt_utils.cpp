@@ -168,6 +168,33 @@ nvinfer1::ILayer* netAddMaxpool(int layerIdx, std::map<std::string, std::string>
     return pool;
 }
 
+nvinfer1::ILayer* netAddAvgpool(int layerIdx, std::map<std::string, std::string>& block,
+                                nvinfer1::ITensor* input, nvinfer1::INetworkDefinition* network)
+{
+    assert(block.at("type") == "avgpool");
+    auto input_dims = input->getDimensions();
+    assert(input_dims.d[1] == input_dims.d[2]);
+
+    int32_t size = input_dims.d[1];
+    if (block.find("size") != block.end()) {
+        size = std::stoi(block.at("size"));
+    }
+    
+    int32_t stride = 1;
+    if (block.find("stride") != block.end()) {
+        stride = std::stol(block.at("stride"));
+    }
+
+    nvinfer1::IPoolingLayer* pool
+        = network->addPooling(*input, nvinfer1::PoolingType::kAVERAGE, nvinfer1::DimsHW{size, size});
+    assert(pool);
+    std::string avgpoolLayerName = "avgpool_" + std::to_string(layerIdx);
+    pool->setStride(nvinfer1::DimsHW{stride, stride});
+    pool->setName(avgpoolLayerName.c_str());
+
+    return pool;
+}
+
 nvinfer1::ILayer* netAddConvLinear(int layerIdx, std::map<std::string, std::string>& block,
                                    std::vector<float>& weights,
                                    std::vector<nvinfer1::Weights>& trtWeights, int& weightPtr,
