@@ -76,12 +76,15 @@ int32_t main(int32_t argc, char** argv) {
         auto persons = ad.detect(img, boxes);
         std::cerr << "[marked]" << std::endl;
 
+        cv::Mat canvas = img.copy();
         for (auto person : persons) {
-            mark_a_labeled_person(img, person);
+            mark_a_labeled_person(canvas, person);
         }
 
         char pathBuf[30];
         sprintf(pathBuf, "dump/frame_%d.jpg", frames);
+        cv::imwrite(pathBuf, canvas);
+        sprintf(pathBuf, "dump/orig_%d.jpg", frames);
         cv::imwrite(pathBuf, img);
 
         if (frames >= 500) {
