@@ -81,6 +81,9 @@ uint64_t get3DTensorVolume(nvinfer1::Dims inputDims);
 // Helper functions to create yolo engine
 nvinfer1::ILayer* netAddMaxpool(int layerIdx, std::map<std::string, std::string>& block,
                                 nvinfer1::ITensor* input, nvinfer1::INetworkDefinition* network);
+nvinfer1::ILayer* netAddAvgpool(int layerIdx, std::map<std::string, std::string>& block,
+                                nvinfer1::ITensor* input, nvinfer1::INetworkDefinition* network);                            
+
 nvinfer1::ILayer* netAddConvLinear(int layerIdx, std::map<std::string, std::string>& block,
                                    std::vector<float>& weights,
                                    std::vector<nvinfer1::Weights>& trtWeights, int& weightPtr,
