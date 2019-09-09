@@ -323,39 +323,40 @@ nvinfer1::INetworkDefinition *Yolo::createYoloNetwork (
         else if (m_configBlocks.at(i).at("type") == "maxpool")
         {
             // Add same padding layers
-	    if (m_configBlocks.at(i).find("size") != m_configBlocks.at(i).end() && m_configBlocks.at(i).find("stride") != m_configBlocks.at(i).end()) 
-	    {
-            	if (m_configBlocks.at(i).at("size") == "2" && m_configBlocks.at(i).at("stride") == "1")
-            	{
-                	m_TinyMaxpoolPaddingFormula->addSamePaddingLayer("sp_maxpool_" + std::to_string(i));
-           	}
+            if (m_configBlocks.at(i).find("size") != m_configBlocks.at(i).end() && m_configBlocks.at(i).find("stride") != m_configBlocks.at(i).end()) 
+            {
+                if (m_configBlocks.at(i).at("size") == "2" && m_configBlocks.at(i).at("stride") == "1")
+                {
+                    m_TinyMaxpoolPaddingFormula->addSamePaddingLayer("sp_maxpool_" + std::to_string(i));
+                }
+            }        
             
-		std::string inputVol = dimsToString(previous->getDimensions());
-            	nvinfer1::ILayer* out = netAddMaxpool(i, m_configBlocks.at(i), previous, network);
-            	previous = out->getOutput(0);
-            	assert(previous != nullptr);
-            	std::string outputVol = dimsToString(previous->getDimensions());
-            	tensorOutputs.push_back(out->getOutput(0));
-            	printLayerInfo(layerIndex, "maxpool", inputVol, outputVol, std::to_string(weightPtr));
-            }
-	}
+            std::string inputVol = dimsToString(previous->getDimensions());
+            nvinfer1::ILayer* out = netAddMaxpool(i, m_configBlocks.at(i), previous, network);
+            previous = out->getOutput(0);
+            assert(previous != nullptr);
+            std::string outputVol = dimsToString(previous->getDimensions());
+            tensorOutputs.push_back(out->getOutput(0));
+            printLayerInfo(layerIndex, "maxpool", inputVol, outputVol, std::to_string(weightPtr));
+        }
         else if (m_configBlocks.at(i).at("type") == "avgpool")
         {
             // Add same padding layers
-	    if (m_configBlocks.at(i).find("size") != m_configBlocks.at(i).end() && m_configBlocks.at(i).find("stride") != m_configBlocks.at(i).end())
+	        if (m_configBlocks.at(i).find("size") != m_configBlocks.at(i).end() && m_configBlocks.at(i).find("stride") != m_configBlocks.at(i).end())
             { 
             	if (m_configBlocks.at(i).at("size") == "2" && m_configBlocks.at(i).at("stride") == "1")
             	{
                 	m_TinyMaxpoolPaddingFormula->addSamePaddingLayer("sp_avgpool_" + std::to_string(i));
             	}
-            	std::string inputVol = dimsToString(previous->getDimensions());
-            	nvinfer1::ILayer* out = netAddAvgpool(i, m_configBlocks.at(i), previous, network);
-            	previous = out->getOutput(0);
-            	assert(previous != nullptr);
-            	std::string outputVol = dimsToString(previous->getDimensions());
-            	tensorOutputs.push_back(out->getOutput(0));
-            	printLayerInfo(layerIndex, "avgpool", inputVol, outputVol, std::to_string(weightPtr));
-	    }
+            }
+
+            std::string inputVol = dimsToString(previous->getDimensions());
+            nvinfer1::ILayer* out = netAddAvgpool(i, m_configBlocks.at(i), previous, network);
+            previous = out->getOutput(0);
+            assert(previous != nullptr);
+            std::string outputVol = dimsToString(previous->getDimensions());
+            tensorOutputs.push_back(out->getOutput(0));
+            printLayerInfo(layerIndex, "avgpool", inputVol, outputVol, std::to_string(weightPtr));
         }
         else if (m_configBlocks.at(i).at("type") == "softmax")
         {
