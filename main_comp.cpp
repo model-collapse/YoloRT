@@ -76,7 +76,7 @@ int32_t main(int32_t argc, char** argv) {
         auto persons = ad.detect(img, boxes);
         std::cerr << "[marked]" << std::endl;
 
-        cv::Mat canvas = img.copy();
+        cv::Mat canvas = img.clone();
         for (auto person : persons) {
             mark_a_labeled_person(canvas, person);
         }
