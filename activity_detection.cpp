@@ -15,10 +15,12 @@ struct InferDeleter
 
 ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, std::string name_path, int32_t batch_size, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
-    
+
     auto builder = nvinfer1::createInferBuilder(logger);
     this->engine = this->init_engine(cfg_path, wts_path, builder);
     this->ctx = this->engine->createExecutionContext();
+
+    assert(batch_size < this->engine->getMaxBatchSize());
 
     this->buffers = new UnifiedBufManager(std::shared_ptr<nvinfer1::ICudaEngine>(engine, InferDeleter()), this->batch_size);
 

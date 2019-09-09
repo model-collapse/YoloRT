@@ -13,7 +13,7 @@ const int32_t PC_BATCH_SIZE = 1;
 const char* AD_CFG_PATH = "../../../model/darknet/wwdarknet53v2.cfg";
 const char* AD_WTS_PATH = "../../../model/darknet/wwdarknet53v2_50000.weights";
 const char* AD_NAME_PATH = "../../../model/darknet/activity_wework.names";
-const int32_t ACT_DET_BATCH_SIZE = 16;
+const int32_t ACT_DET_BATCH_SIZE = 4;
 
 const int32_t MAX_TEXT_LEN = 20;
 
@@ -71,7 +71,10 @@ int32_t main(int32_t argc, char** argv) {
         auto img = src.recv();
         
         auto boxes = pd.detect(img);
+        std::cerr << "[people count] " << boxes.size() << " were found" << std::endl;
+
         auto persons = ad.detect(img, boxes);
+        std::cerr << "[marked]" << std::endl;
 
         for (auto person : persons) {
             mark_a_labeled_person(img, person);
