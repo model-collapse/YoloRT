@@ -1,6 +1,8 @@
 #include "activity_detection.h"
 #include "img.h"
 
+static const CLS_THRES = 0.3;
+
 struct InferDeleter
 {
     template <typename T>
@@ -77,17 +79,25 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
         float* res = (float*)this->buffers->getBuffer(std::string(output_blob_name));
         assert(res != NULL);
         for (int32_t k = 0; k < cnt; k++) {
-            int32_t max_id = 0;
+            std::vector<Activity> activities;
             for (int32_t i = 0; i < (int32_t)this->names.size(); i++) {
-                if (res[i] > res[max_id]) {
-                    max_id = i;
+                if (res[i] > CLS_THRES) {
+                    Activity act {
+                        .activity=names[i],
+                        .prob=res[i],
+                    };
+
+                    activities.append(act);
                 }
             }
             
+            std::sort(activities.begin(), activities.end(), [](const Activity&a, const Activity&b) {
+                return a.prob > b.prob;
+            });
+
             LabeledPeople people {
                 .loc = boxes[off + k],
-                .activity = this->names[max_id],
-                .prob = res[max_id],
+                .activities = activities;
             };
             ret.push_back(people);
 

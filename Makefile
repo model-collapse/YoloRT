@@ -41,6 +41,7 @@ BASE_SRCFILES:= recv.cpp \
            kernels.cu       
 TARGET_EXEC:= yolo_detection
 CVT_EXEC:= convert_to_trt
+TRY_EXEC:= trt_plugin_try
 
 TARGET_OBJS:= $(BASE_SRCFILES:.cpp=.o)
 TARGET_OBJS:= $(TARGET_OBJS:.cu=.o)
@@ -58,6 +59,9 @@ $(TARGET_EXEC) : $(TARGET_OBJS) main_comp.o
 
 $(CVT_EXEC) : $(TARGET_OBJS) cvt.o
 	$(CC) -o $@  cvt.o $(TARGET_OBJS) $(LFLAGS)
+
+$(TRY_EXEC) : trt_plugin_try.o
+	$(CC) -o $@  trt_plugin_try.o $(LFLAGS)
 
 clean:
 	rm -rf $(TARGET_EXEC)

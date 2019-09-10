@@ -289,7 +289,7 @@ extern "C" bool NvDsInferParseYoloV3(
     const std::vector<std::vector<int>> &masks)
 {
     const uint kNUM_BBOXES = 3;
-    static const float kNMS_THRESH = 0.3f;
+    static const float kNMS_THRESH = 0.45f;
     static const float kPROB_THRESH = 0.15f;
 
     const std::vector<const NvDsInferLayerInfo*> sortedLayers =

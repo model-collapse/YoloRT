@@ -8,10 +8,14 @@
 #include "jbuf.h"
 #include "nvdsinfer_custom_impl.h"
 
-struct LabeledPeople {
-    NvDsInferParseObjectInfo loc;
+struct Activity {
     std::string activity;
     float prob;
+};
+
+struct LabeledPeople {
+    NvDsInferParseObjectInfo loc;
+    std::vector<Activity> activities;
 };
 
 class ActivityDetector {
