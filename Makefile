@@ -60,8 +60,8 @@ $(TARGET_EXEC) : $(TARGET_OBJS) main_comp.o
 $(CVT_EXEC) : $(TARGET_OBJS) cvt.o
 	$(CC) -o $@  cvt.o $(TARGET_OBJS) $(LFLAGS)
 
-$(TRY_EXEC) : trt_plugin_try.o
-	$(CC) -o $@  trt_plugin_try.o $(LFLAGS)
+$(TRY_EXEC) : plugin_try.o
+	$(CC) -o $@  plugin_try.o $(LFLAGS)
 
 clean:
 	rm -rf $(TARGET_EXEC)
