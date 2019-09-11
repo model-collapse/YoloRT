@@ -103,7 +103,7 @@ int YoloLayerV3::enqueue(
     int batchSize, const void* const* inputs, void** outputs, void* workspace,
     cudaStream_t stream)
 {
-    std::cerr << "runing yolov3" << endl;
+    std::cerr << "runing yolov3" << std::endl;
     CHECK(cudaYoloLayerV3(
               inputs[0], outputs[0], batchSize, m_GridSize, m_NumClasses, m_NumBoxes,
               m_OutputSize, stream));
