@@ -2,7 +2,7 @@
 #include "img.h"
 #include "plugin_factory.h"
 
-static const CLS_THRES = 0.3;
+static const float CLS_THRES = 0.3;
 
 struct InferDeleter
 {
@@ -41,16 +41,16 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
     std::cerr << "#classes = " << this->names.size() << std::endl;
 }
 
-ActivityDetector::ActivityDetector(std::string model_path, std::string wts_path, std::string name_path, int32_t batch_size, nvinfer1::ILogger& logger) {
+ActivityDetector::ActivityDetector(std::string model_path, std::string name_path, int32_t batch_size, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
 
     IRuntime* runtime = createInferRuntime(gLogger);
     int64_t length;
     std::ifstream model_file(model_path, std::ios::binary);
-    model_path >> length;
+    model_file >> length;
     std::cerr << "data length = " << length << std::endl;
     char *buf = new char[length];
-    model_file.read(bug, length);
+    model_file.read(buf, length);
     model_file.close();
 
     YOLOPluginFactory factory;
@@ -123,7 +123,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
                         .prob=res[i],
                     };
 
-                    activities.append(act);
+                    activities.push_back(act);
                 }
             }
             
@@ -133,7 +133,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
 
             LabeledPeople people {
                 .loc = boxes[off + k],
-                .activities = activities;
+                .activities = activities,
             };
             ret.push_back(people);
 

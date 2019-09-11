@@ -2,6 +2,7 @@
 #include "nvdsparsebbox_Yolo.h"
 #include "nvdsinfer_custom_impl.h"
 #include "nvdsparsebbox_Yolo.h"
+#include "plugin_factory.h"
 
 struct InferDeleter
 {
@@ -53,10 +54,10 @@ PeopleDetector::PeopleDetector(std::string model_path, int32_t batch_size, nvinf
     IRuntime* runtime = createInferRuntime(gLogger);
     int64_t length;
     std::ifstream model_file(model_path, std::ios::binary);
-    model_path >> length;
+    model_file >> length;
     std::cerr << "data length = " << length << std::endl;
     char *buf = new char[length];
-    model_file.read(bug, length);
+    model_file.read(buf, length);
     model_file.close();
 
     YOLOPluginFactory factory;

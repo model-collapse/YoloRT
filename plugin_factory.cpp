@@ -4,7 +4,7 @@
 YOLOPluginFactory::YOLOPluginFactory() {
 }
 
-IPlugin* YOLOPluginFactory::createPlugin(const char *layerName, const void *serialData, size_t serialLength) {
+nvinfer1::IPlugin* YOLOPluginFactory::createPlugin(const char *layerName, const void *serialData, size_t serialLength) {
     std::string ln = layerName;
     if (ln == "YoloLayerV3_TRT") {
         return this->deserialize_yolo_v3(serialData, serialLength);
@@ -16,11 +16,11 @@ IPlugin* YOLOPluginFactory::createPlugin(const char *layerName, const void *seri
     return NULL;
 }
 
-IPlugin* YOLOPluginFactory::deserialize_yolo_v3(void* buf, int32_t size) {
+nvinfer1::IPlugin* YOLOPluginFactory::deserialize_yolo_v3(const void* buf, int32_t size) {
     return new YoloLayerV3(buf, (size_t)size);
 }
 
-IPlugin* YOLOPluginFactory::deserialize_leaky_relu(void* buf, int32_t size) {
-    float* p = buf;
-    return nvinfer1::createLReLUPlugin(p[0]);
+nvinfer1::IPlugin* YOLOPluginFactory::deserialize_leaky_relu(const void* buf, int32_t size) {
+    const float* p = (float*)buf;
+    return createLReLUPlugin(p[0]);
 }
