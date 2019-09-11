@@ -103,6 +103,7 @@ int YoloLayerV3::enqueue(
     int batchSize, const void* const* inputs, void** outputs, void* workspace,
     cudaStream_t stream)
 {
+    std::cerr << "runing yolov3" << endl;
     CHECK(cudaYoloLayerV3(
               inputs[0], outputs[0], batchSize, m_GridSize, m_NumClasses, m_NumBoxes,
               m_OutputSize, stream));
@@ -125,6 +126,7 @@ void YoloLayerV3::serialize(void* buffer) const
 
 nvinfer1::IPluginV2* YoloLayerV3::clone() const
 {
+    std::cerr << "cloning yolov3" << std::endl;
     return new YoloLayerV3 (m_NumBoxes, m_NumClasses, m_GridSize);
 }
 
