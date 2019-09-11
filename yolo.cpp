@@ -182,10 +182,12 @@ nvinfer1::INetworkDefinition *Yolo::createYoloNetwork (
                 * (curYoloTensor.numBBoxes * (5 + curYoloTensor.numClasses));
             std::string layerName = "yolo_" + std::to_string(i);
             curYoloTensor.blobName = layerName;
+            std::cerr << "newing yolo" << std::endl;
             nvinfer1::IPluginV2* yoloPlugin
                 = new YoloLayerV3(m_OutputTensors.at(outputTensorCount).numBBoxes,
                                   m_OutputTensors.at(outputTensorCount).numClasses,
                                   m_OutputTensors.at(outputTensorCount).gridSize);
+            std::cerr << "newing yolo end" << std::endl;
             assert(yoloPlugin != nullptr);
             nvinfer1::IPluginV2Layer* yolo = network->addPluginV2(&previous, 1, *yoloPlugin);
             assert(yolo != nullptr);
