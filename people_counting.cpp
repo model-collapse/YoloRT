@@ -58,7 +58,7 @@ PeopleDetector::PeopleDetector(std::string model_path, int32_t batch_size, nvinf
         return;
     }
 
-    model_file >> length;
+    model_file.read((char*)&length, sizeof(length));
     std::cerr << "data length = " << length << std::endl;
     char *buf = new char[length];
     model_file.read(buf, length);

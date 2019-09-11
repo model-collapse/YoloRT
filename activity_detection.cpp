@@ -51,7 +51,7 @@ ActivityDetector::ActivityDetector(std::string model_path, std::string name_path
         return;
     }
 
-    model_file >> length;
+    model_file.read((char*)&length, sizeof(length));
     std::cerr << "data length = " << length << std::endl;
     char *buf = new char[length];
     model_file.read(buf, length);
