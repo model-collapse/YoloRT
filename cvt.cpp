@@ -17,6 +17,8 @@ const int32_t input_tensor_height = 640;
 const int32_t input_tensor_width = 640;
 const int32_t input_tensor_depth = 3;
 
+const int32_t MAX_BATCH_SIZE = 4;
+
 const char* pc_input_blob_name = "data";
 const char pc_output_blob_names[][20] = {
     "yolo_83",
@@ -59,6 +61,7 @@ int32_t main(int32_t argc, char** argv) {
     engine->destroy();
     serializedModel->destroy();
 
+    builder->setMaxBatchSize(MAX_BATCH_SIZE);
     engine = initEngine(AD_CFG_PATH, AD_WTS_PATH, ad_input_blob_name,  builder);
     serializedModel = engine->serialize();
 
