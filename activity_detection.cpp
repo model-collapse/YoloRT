@@ -46,6 +46,12 @@ ActivityDetector::ActivityDetector(std::string model_path, std::string name_path
     IRuntime* runtime = createInferRuntime(gLogger);
     int64_t length;
     std::ifstream model_file(model_path, std::ios::binary);
+    if (!model_file) {
+        std::cerr << "cannot open file: " << model_path << std::endl;
+
+        return
+    }
+
     model_file >> length;
     std::cerr << "data length = " << length << std::endl;
     char *buf = new char[length];
