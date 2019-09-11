@@ -42,6 +42,7 @@ BASE_SRCFILES:= recv.cpp \
 TARGET_EXEC:= yolo_detection
 CVT_EXEC:= convert_to_trt
 TRY_EXEC:= trt_plugin_try
+OLD_EXEC:=old_yolo_detection
 
 TARGET_OBJS:= $(BASE_SRCFILES:.cpp=.o)
 TARGET_OBJS:= $(TARGET_OBJS:.cu=.o)
@@ -57,11 +58,16 @@ all: $(TARGET_EXEC)
 $(TARGET_EXEC) : $(TARGET_OBJS) main_comp.o
 	$(CC) -o $@  main_comp.o $(TARGET_OBJS) $(LFLAGS)
 
+$(OLD_EXEC) : $(TARGET_OBJS) main_comp_s.o
+	$(CC) -o $@  main_comp_s.o $(TARGET_OBJS) $(LFLAGS)
+
 $(CVT_EXEC) : $(TARGET_OBJS) cvt.o
 	$(CC) -o $@  cvt.o $(TARGET_OBJS) $(LFLAGS)
 
 $(TRY_EXEC) : plugin_try.o
 	$(CC) -o $@  plugin_try.o $(LFLAGS)
+
+
 
 clean:
 	rm -rf $(TARGET_EXEC)
