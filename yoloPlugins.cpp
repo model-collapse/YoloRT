@@ -55,6 +55,8 @@ YoloLayerV3::YoloLayerV3 (const void* data, size_t length)
     read(d, m_NumClasses);
     read(d, m_GridSize);
     read(d, m_OutputSize);
+
+    std::cerr << "layer created [#boxes = " << m_NumBoxes << ", #classes = " << m_NumClasses >> ", #grid_size = " << m_GridSize << ", #output = " << m_OutputSize << std::endl;
 };
 
 YoloLayerV3::YoloLayerV3 (
