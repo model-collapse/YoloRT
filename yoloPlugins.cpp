@@ -69,6 +69,8 @@ YoloLayerV3::YoloLayerV3 (
     assert(m_NumClasses > 0);
     assert(m_GridSize > 0);
     m_OutputSize = m_GridSize * m_GridSize * (m_NumBoxes * (4 + 1 + m_NumClasses));
+
+    std::cerr << "layer created [#boxes = " << m_NumBoxes << ", #classes = " << m_NumClasses << ", #grid_size = " << m_GridSize << ", #output = " << m_OutputSize << std::endl;
 };
 
 nvinfer1::Dims
