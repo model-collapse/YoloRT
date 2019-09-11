@@ -125,3 +125,4 @@ nvinfer1::IPluginV2* YoloLayerV3::clone() const
 }
 
 REGISTER_TENSORRT_PLUGIN(YoloLayerV3PluginCreator);
+REGISTER_TENSORRT_PLUGIN(LeakyReLUCreator);

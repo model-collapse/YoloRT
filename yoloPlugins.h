@@ -160,7 +160,7 @@ public:
         const char* name, const void* serialData, size_t serialLength) override
     {
         float* p = (float*)serialData;
-        return nvinfer1::createLReLUPlugin(p[0]);
+        return createLReLUPlugin(p[0]);
     }
 
     void setPluginNamespace(const char* libNamespace) override {
