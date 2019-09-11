@@ -160,6 +160,8 @@ public:
         const char* name, const void* serialData, size_t serialLength) override
     {
         float* p = (float*)serialData;
+        assert(abs(p[0] - 0.1) < 0.0001);
+
         return createLReLUPlugin(p[0]);
     }
 
