@@ -30,6 +30,7 @@ public:
     static const int32_t MAX_BATCH_SIZE = 4;
 
     ActivityDetector(std::string cfg_path, std::string wts_path, std::string names_path, int32_t batch_size, nvinfer1::ILogger& logger);
+    ActivityDetector(std::string model_path, std::string names_path, int32_t batch_size, nvinfer1::ILogger& logger);
     ~ActivityDetector();
 
     std::vector<LabeledPeople> detect(cv::Mat img, std::vector<NvDsInferParseObjectInfo> boxes);

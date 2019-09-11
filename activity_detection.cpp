@@ -1,5 +1,6 @@
 #include "activity_detection.h"
 #include "img.h"
+#include "plugin_factory.h"
 
 static const CLS_THRES = 0.3;
 
@@ -21,6 +22,41 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
     auto builder = nvinfer1::createInferBuilder(logger);
     builder->setMaxBatchSize(MAX_BATCH_SIZE);
     this->engine = this->init_engine(cfg_path, wts_path, builder);
+    this->ctx = this->engine->createExecutionContext();
+    std::cerr << "max_batch_size = " << this->engine->getMaxBatchSize() << std::endl;
+    assert(batch_size <= this->engine->getMaxBatchSize());
+
+    this->buffers = new UnifiedBufManager(std::shared_ptr<nvinfer1::ICudaEngine>(engine, InferDeleter()), this->batch_size);
+
+    std::string line;
+    std::ifstream ifs(name_path);
+    this->names.clear();
+    while (std::getline(ifs, line)) {
+        if (line.size() > 1) {
+            this->names.push_back(line);
+        }
+    }
+    ifs.close();
+
+    std::cerr << "#classes = " << this->names.size() << std::endl;
+}
+
+ActivityDetector::ActivityDetector(std::string model_path, std::string wts_path, std::string name_path, int32_t batch_size, nvinfer1::ILogger& logger) {
+    this->batch_size = batch_size;
+
+    IRuntime* runtime = createInferRuntime(gLogger);
+    int64_t length;
+    std::ifstream model_file(model_path, std::ios::binary);
+    model_path >> length;
+    std::cerr << "data length = " << length << std::endl;
+    char *buf = new char[length];
+    model_file.read(bug, length);
+    model_file.close();
+
+    YOLOPluginFactory factory;
+    this->engine = runtime->deserializeCudaEngine(buf, length, &factory);
+    delete buf;
+
     this->ctx = this->engine->createExecutionContext();
     std::cerr << "max_batch_size = " << this->engine->getMaxBatchSize() << std::endl;
     assert(batch_size <= this->engine->getMaxBatchSize());

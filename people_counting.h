@@ -29,6 +29,7 @@ public:
     std::vector<std::string> output_blob_names;
 
     PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, nvinfer1::ILogger& logger);
+    PeopleDetector(std::string model_path, int32_t batch_size, nvinfer1::ILogger& logger);
     ~PeopleDetector();
 
     std::vector<NvDsInferParseObjectInfo> detect(cv::Mat img);

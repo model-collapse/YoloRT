@@ -39,6 +39,41 @@ PeopleDetector::PeopleDetector(std::string cfg_path, std::string wts_path, int32
 
 }
 
+PeopleDetector::PeopleDetector(std::string model_path, int32_t batch_size, nvinfer1::ILogger& logger) {
+    this->batch_size = batch_size;
+    
+    std::vector<std::string> output_blob_names = {
+        "yolo_83",
+        "yolo_95",
+        "yolo_107"
+    };
+
+    this->output_blob_names = output_blob_names;
+
+    IRuntime* runtime = createInferRuntime(gLogger);
+    int64_t length;
+    std::ifstream model_file(model_path, std::ios::binary);
+    model_path >> length;
+    std::cerr << "data length = " << length << std::endl;
+    char *buf = new char[length];
+    model_file.read(bug, length);
+    model_file.close();
+
+    YOLOPluginFactory factory;
+    this->engine = runtime->deserializeCudaEngine(buf, length, &factory);
+    delete buf;
+    
+    this->ctx = this->engine->createExecutionContext();
+
+    this->buffers = new UnifiedBufManager(std::shared_ptr<nvinfer1::ICudaEngine>(engine, InferDeleter()), batch_size);
+
+    for (int32_t i = 0; i < 3; i++) {
+        NvDsInferLayerInfo layer = this->buffers->getLayerInfo(output_blob_names[i]);
+        this->layer_info.emplace_back(layer);
+    }
+
+}
+
 nvinfer1::ICudaEngine* PeopleDetector::init_engine(std::string cfg_path, std::string weight_path, nvinfer1::IBuilder* builder) {
     NetworkInfo info;
     info.networkType = "yolov3";
