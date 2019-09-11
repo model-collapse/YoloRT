@@ -322,6 +322,7 @@ extern "C" bool NvDsInferParseYoloV3(
         objects.insert(objects.end(), outObjs.begin(), outObjs.end());
     }
 
+    std::cerr << "[before nms] #obj = " << objects.size() << std::endl;
     objectList.clear();
     objectList = nmsAllClasses(kNMS_THRESH, objects, NUM_CLASSES_YOLO);
 
