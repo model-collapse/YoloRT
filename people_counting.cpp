@@ -2,7 +2,6 @@
 #include "nvdsparsebbox_Yolo.h"
 #include "nvdsinfer_custom_impl.h"
 #include "nvdsparsebbox_Yolo.h"
-#include "plugin_factory.h"
 
 struct InferDeleter
 {
@@ -60,10 +59,9 @@ PeopleDetector::PeopleDetector(std::string model_path, int32_t batch_size, nvinf
     model_file.read(buf, length);
     model_file.close();
 
-    YOLOPluginFactory factory;
-    this->engine = runtime->deserializeCudaEngine(buf, length, &factory);
+    this->engine = runtime->deserializeCudaEngine(buf, length, NULL);
     delete buf;
-    
+
     this->ctx = this->engine->createExecutionContext();
 
     this->buffers = new UnifiedBufManager(std::shared_ptr<nvinfer1::ICudaEngine>(engine, InferDeleter()), batch_size);

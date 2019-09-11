@@ -1,6 +1,5 @@
 #include "activity_detection.h"
 #include "img.h"
-#include "plugin_factory.h"
 
 static const float CLS_THRES = 0.3;
 
@@ -53,8 +52,7 @@ ActivityDetector::ActivityDetector(std::string model_path, std::string name_path
     model_file.read(buf, length);
     model_file.close();
 
-    YOLOPluginFactory factory;
-    this->engine = runtime->deserializeCudaEngine(buf, length, &factory);
+    this->engine = runtime->deserializeCudaEngine(buf, length, NULL);
     delete buf;
 
     this->ctx = this->engine->createExecutionContext();

@@ -28,9 +28,12 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
     float font_scale = 0.5;
     float thickness = 1;
 
-    char text_buf[MAX_TEXT_LEN];
-    sprintf(text_buf, "%s:%03f", person.activity.c_str(), person.prob);
-    std::string text(text_buf);
+    std::stringstream ss;
+    for (Activity act : person.activities) {
+        ss << act.activity << ":";
+    }
+
+    std::string text = ss.str();
 
     int32_t anchor;
     cv::Size text_size = cv::getTextSize(text, font, font_scale, thickness, &anchor);

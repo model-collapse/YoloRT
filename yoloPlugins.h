@@ -45,6 +45,8 @@ namespace
 {
 const char* YOLOV3LAYER_PLUGIN_VERSION {"1"};
 const char* YOLOV3LAYER_PLUGIN_NAME {"YoloLayerV3_TRT"};
+const char* LRELULAYER_PLUGIN_VERSION {"1"};
+const char* LRELULAYER_PLUGIN_NAME {"LReLU_TRT"};
 } // namespace
 
 class YoloLayerV3 : public nvinfer1::IPluginV2
@@ -120,6 +122,45 @@ public:
     {
         std::cout << "Deserialize yoloLayerV3 plugin: " << name << std::endl;
         return new YoloLayerV3(serialData, serialLength);
+    }
+
+    void setPluginNamespace(const char* libNamespace) override {
+        m_Namespace = libNamespace;
+    }
+    const char* getPluginNamespace() const override {
+        return m_Namespace.c_str();
+    }
+
+private:
+    std::string m_Namespace {""};
+};
+
+class LeakyReLUCreator : public nvinfer1::IPluginCreator
+{
+public:
+    LeakyReLUCreator () {}
+    ~LeakyReLUCreator () {}
+
+    const char* getPluginName () const override { return LRELULAYER_PLUGIN_NAME; }
+    const char* getPluginVersion () const override { return LRELULAYER_PLUGIN_VERSION; }
+
+    const nvinfer1::PluginFieldCollection* getFieldNames() override {
+        std::cerr<< "LeakyReLUCreator::getFieldNames is not implemented" << std::endl;
+        return nullptr;
+    }
+
+    nvinfer1::IPluginV2* createPlugin (
+        const char* name, const nvinfer1::PluginFieldCollection* fc) override
+    {
+        std::cerr<< "LeakyReLUCreator::getFieldNames is not implemented.\n";
+        return nullptr;
+    }
+
+    nvinfer1::IPluginV2* deserializePlugin (
+        const char* name, const void* serialData, size_t serialLength) override
+    {
+        float* p = (float*)serialData;
+        return nvinfer1::createLReLUPlugin(p[0]);
     }
 
     void setPluginNamespace(const char* libNamespace) override {
