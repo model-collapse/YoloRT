@@ -55,8 +55,7 @@ PeopleDetector::PeopleDetector(std::string model_path, int32_t batch_size, nvinf
     std::ifstream model_file(model_path, std::ios::binary);
     if (!model_file) {
         std::cerr << "cannot open file: " << model_path << std::endl;
-
-        return
+        return;
     }
 
     model_file >> length;
