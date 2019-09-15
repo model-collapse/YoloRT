@@ -19,7 +19,7 @@ std::vector<std::string> list_dir(std::string path, std::string ext) {
         std::string x = ptr->d_name;
         std::string dir_path = path + std::string("/") + x;
         
-        if (endWith(dir_path, "jpg")) {
+        if (endWith(dir_path, ext)) {
             ret.push_back(dir_path);
         }
     }
@@ -32,7 +32,7 @@ ImageSource::ImageSource(const char* address, bool file_mode)
     : ctx(1), buf(MAX_BUF_SIZE) {
     if (file_mode) {
         this->id = 0;
-        this->file_names = list_dir(address);
+        this->file_names = list_dir(address, "jpg");
         fprintf(stderr, "#%d files loaded!\n", this->file_names.size());
         fprintf(stderr, "first one is %s\n", this->file_names[0].c_str());
         return;
