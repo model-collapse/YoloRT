@@ -26,7 +26,7 @@ ImageSource::ImageSource(const char* address, bool file_mode)
     if (file_mode) {
         this->id = 0;
         this->file_names = list_dir(address);
-        fprintf(stderr, "#%d files loaded!", this->files_names.size());
+        fprintf(stderr, "#%d files loaded!", this->file_names.size());
         return;
     }
 
