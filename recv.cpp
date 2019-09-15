@@ -56,9 +56,11 @@ ImageSource::~ImageSource() {
 }
 
 cv::Mat ImageSource::recv() {
+    fprintf(stderr, "receiving\n");
     if (this->id >= 0) {
         std::string path = this->file_names[this->id];
         this->id = (this->id + 1) % this->file_names.size();
+        fprintf(stderr, "received!\n");
         return cv::imread(path.c_str(), cv::IMREAD_COLOR);
     }
     
