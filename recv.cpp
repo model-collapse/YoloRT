@@ -4,7 +4,11 @@
 #include "dirent.h"
 #define MAX_BUF_SIZE 1000000 // 1M buffer
 
-std::vector<std::string> list_dir(std::string path) {
+bool endWith(const string &str, const string &tail) {
+	return str.compare(str.size() - tail.size(), tail.size(), tail) == 0;
+}
+
+std::vector<std::string> list_dir(std::string path, std::string ext) {
     DIR * dir;
     struct dirent * ptr;
     std::vector<std::string> ret;
@@ -14,7 +18,10 @@ std::vector<std::string> list_dir(std::string path) {
     {
         std::string x = ptr->d_name;
         std::string dir_path = path + std::string("/") + x;
-        ret.push_back(dir_path);
+        
+        if (endWith(dir_path, "jpg")) {
+            ret.push_back(dir_path);
+        }
     }
     closedir(dir);//关闭目录指针
 
