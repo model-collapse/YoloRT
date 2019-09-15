@@ -63,7 +63,7 @@ int32_t main(int32_t argc, char** argv) {
     PeopleDetector pd(PC_MODEL_PATH, PC_BATCH_SIZE, gLogger);
 
     // creating image source
-    ImageSource src("tcp://10.249.77.88:18964");
+    ImageSource src("./test_data", true);
 
     int32_t frames = 0;
     while (true) {
