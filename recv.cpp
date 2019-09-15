@@ -26,7 +26,8 @@ ImageSource::ImageSource(const char* address, bool file_mode)
     if (file_mode) {
         this->id = 0;
         this->file_names = list_dir(address);
-        fprintf(stderr, "#%d files loaded!", this->file_names.size());
+        fprintf(stderr, "#%d files loaded!\n", this->file_names.size());
+        fprintf(stderr, "first one is %s\n", this->files_names[0].c_str());
         return;
     }
 
@@ -56,8 +57,8 @@ ImageSource::~ImageSource() {
 }
 
 cv::Mat ImageSource::recv() {
-    fprintf(stderr, "receiving\n");
     if (this->id >= 0) {
+        fprintf(stderr, "receiving %s\n", this->file_names[this->id].c_str());
         std::string path = this->file_names[this->id];
         this->id = (this->id + 1) % this->file_names.size();
         fprintf(stderr, "received!\n");
