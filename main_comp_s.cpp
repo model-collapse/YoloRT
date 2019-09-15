@@ -59,6 +59,9 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
 }
 
 int32_t main(int32_t argc, char** argv) {
+    // creating image source
+    ImageSource src("./test_data", true);
+
     fprintf(stderr, "haha\n");
     fflush(stderr);
 
@@ -66,7 +69,7 @@ int32_t main(int32_t argc, char** argv) {
     PeopleDetector pd(PC_CFG_PATH, PC_WTS_PATH, PC_BATCH_SIZE, gLogger);
 
     // creating image source
-    ImageSource src("tcp://10.249.77.88:18964");
+    //ImageSource src("tcp://10.249.77.88:18964");
 
     int32_t frames = 0;
     while (true) {

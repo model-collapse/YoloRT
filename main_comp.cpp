@@ -59,11 +59,11 @@ int32_t main(int32_t argc, char** argv) {
     fprintf(stderr, "haha\n");
     fflush(stderr);
 
-    ActivityDetector ad(AD_MODEL_PATH, AD_NAME_PATH, ACT_DET_BATCH_SIZE, gLogger);
-    PeopleDetector pd(PC_MODEL_PATH, PC_BATCH_SIZE, gLogger);
-
     // creating image source
     ImageSource src("./test_data", true);
+
+    ActivityDetector ad(AD_MODEL_PATH, AD_NAME_PATH, ACT_DET_BATCH_SIZE, gLogger);
+    PeopleDetector pd(PC_MODEL_PATH, PC_BATCH_SIZE, gLogger);
 
     int32_t frames = 0;
     while (true) {
