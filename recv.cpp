@@ -4,7 +4,7 @@
 #include "dirent.h"
 #define MAX_BUF_SIZE 1000000 // 1M buffer
 
-bool endWith(const string &str, const string &tail) {
+bool endWith(const std::string &str, const std::string &tail) {
 	return str.compare(str.size() - tail.size(), tail.size(), tail) == 0;
 }
 
