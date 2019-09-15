@@ -6,7 +6,7 @@
 
 class ImageSource {
 public:
-    ImageSource(const char* address);
+    ImageSource(const char* address, bool file_mode);
     ~ImageSource();
     cv::Mat recv();
 
@@ -15,5 +15,7 @@ private:
     zmq::socket_t* socket;
     zmq::message_t buf;
 };
+    int32_t id;
+    std::vector<std::string> file_names;
 
 #endif

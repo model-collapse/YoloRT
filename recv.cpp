@@ -3,8 +3,12 @@
 #include <inttypes.h>
 #define MAX_BUF_SIZE 1000000 // 1M buffer
 
-ImageSource::ImageSource(const char* address) 
+ImageSource::ImageSource(const char* address, bool file_mode) 
     : ctx(1), buf(MAX_BUF_SIZE) {
+    if (file_mode) {
+       
+    }
+
     try{
         this->socket = new zmq::socket_t(this->ctx, ZMQ_SUB);
     } catch (zmq::error_t err) {
