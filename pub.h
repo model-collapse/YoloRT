@@ -10,4 +10,4 @@ public:
 private:
     cppkafka::Producer *producer;
     std::string topic_name;
-}
+};
