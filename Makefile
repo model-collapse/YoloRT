@@ -38,6 +38,7 @@ BASE_SRCFILES:= recv.cpp \
            yoloPlugins.cpp    \
            trt_utils.cpp              \
            yolo.cpp             \
+		   pub.cpp 				\
            kernels.cu       
 TARGET_EXEC:= yolo_detection
 CVT_EXEC:= convert_to_trt
