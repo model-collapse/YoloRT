@@ -79,10 +79,10 @@ int32_t main(int32_t argc, char** argv) {
         auto boxes = pd.detect(img_data.img);
         std::cerr << "[people count] " << boxes.size() << " were found" << std::endl;
 
-        auto persons = ad.detect(img, boxes);
+        auto persons = ad.detect(img_data.img, boxes);
         std::cerr << "[marked]" << std::endl;
 
-        
+       	pub.publish(img_data.device_id, img_data.file_name, persons); 
 
         if (frames >= 500) {
             break;
