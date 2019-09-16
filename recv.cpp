@@ -140,6 +140,7 @@ cv::Mat ImageSourceKafka::recv() {
             RestClient::Response r = RestClient::get(spath.str());
             if (r.code != 200) {
                 std::cerr << "ERROR CODE = " << r.code << std::endl;
+                fflush(stderr);
                 return cv::Mat();
             }
 
