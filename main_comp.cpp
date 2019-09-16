@@ -61,7 +61,7 @@ int32_t main(int32_t argc, char** argv) {
     fflush(stderr);
 
     // creating image source
-    ImageSourceKafka src("10.249.77.87:9092", "1" , "model_commands", "http://10.249.77.82:8000");
+    ImageSourceKafka src("10.249.77.87:9092", "2" , "model_commands_2", "http://10.249.77.82:8000");
     KafkaPublisher pub("10.249.77.87:9092", "model_results");
 
     ActivityDetector ad(AD_MODEL_PATH, AD_NAME_PATH, ACT_DET_BATCH_SIZE, gLogger);

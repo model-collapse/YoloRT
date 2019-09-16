@@ -88,8 +88,8 @@ ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* group_na
     cppkafka::Configuration config = {
         { "metadata.broker.list", std::string(broker_addr) },
         { "group.id", group_name },
-        { "enable.auto.commit", false },
-        { "auto.offset.reset", "latest" }
+        { "enable.auto.commit", true }
+        //{ "auto.offset.reset", "latest" }
     };
 
     this->consumer = new cppkafka::Consumer(config);
@@ -107,10 +107,10 @@ ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* group_na
 
     this->topic_name = topic_name;
 
-    auto tp = cppkafka::TopicPartition(topic_name, 0);
-    tp.set_offset(TopicPartition::OFFSET_END);
-    this->consumer->subscribe({this->topic_name});
-    this->consumer->assign({tp});
+    //auto tp = cppkafka::TopicPartition(topic_name, 0);
+    //tp.set_offset(cppkafka::TopicPartition::OFFSET_END);
+    //this->consumer->subscribe({this->topic_name});
+    //his->consumer->assign({tp});
     this->consumer->set_timeout(std::chrono::milliseconds(30 * 1000));
 }
 
@@ -138,7 +138,7 @@ ImageData ImageSourceKafka::recv() {
             d.Parse(std::string(b.begin(), b.end()).c_str());
             std::string device_id = d["device_id"].GetString();
             std::string file_name = d["file_name"].GetString();
-            this->consumer->commit(msg);
+            //this->consumer->commit(msg);
 
             std::cerr << "device: " << device_id << "\t" << "file:" << file_name << std::endl;
             std::stringstream spath;
