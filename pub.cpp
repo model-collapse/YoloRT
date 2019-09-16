@@ -9,6 +9,7 @@ KafkaPublisher::KafkaPublisher(const char* address, const char* topic_name) {
     };
     
     this->producer = new cppkafka::Producer(config);
+    this->producer->set_timeout(std::chrono::milliseconds(30 * 1000));
     this->topic_name = topic_name;
 }
 
@@ -31,7 +32,9 @@ void KafkaPublisher::publish(std::string device_id, std::string file_name, std::
         rapidjson::Value box(rapidjson::kObjectType);
         rapidjson::Value activities(rapidjson::kArrayType);
         for (auto act : p.activities) {
-            activities.PushBack(rapidjson::StringRef(act.activity.c_str()), allocator);
+            rapidjson::Value av(rapidjson::kStringType);
+            av.SetString(act.activity.c_str(), act.activity.size());
+            activities.PushBack(av, allocator);
         }
         
         box.AddMember("activities", activities, allocator);
