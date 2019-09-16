@@ -2,6 +2,9 @@
 #include <opencv2/opencv.hpp>
 #include <inttypes.h>
 #include "dirent.h"
+#include <rapidjson/document.h>
+#include "restclient-cpp/restclient.h"
+
 #define MAX_BUF_SIZE 1000000 // 1M buffer
 
 bool endWith(const std::string &str, const std::string &tail) {
@@ -79,4 +82,69 @@ cv::Mat ImageSource::recv() {
     fprintf(stderr, "received at" PRId64 "\n", ((int64_t*)this->buf.data())[0]);
     fflush(stderr);
     return cv::imdecode(raw_data, cv::IMREAD_COLOR);
+}
+
+ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* topic_name, const char* fs_prefix) {
+    Configuration config = {
+        { "metadata.broker.list", std::string(broker_addr) },
+        { "enable.auto.commit", false }
+    };
+
+    this->consumer = new Consumer(config);
+    this->fs_prefix = fs_prefix;
+
+    // Print the assigned partitions on assignment
+    this->consumer->set_assignment_callback([](const cppkafka::TopicPartitionList& partitions) {
+        std::cout << "Got assigned: " << partitions << std::endl;
+    });
+
+    // Print the revoked partitions on revocation
+    this->consumer->set_revocation_callback([](const cppkafka::TopicPartitionList& partitions) {
+        std::cout << "Got revoked: " << partitions << std::endl;
+    });
+
+    this->topic_name = topic_name;
+
+    this->consumer->subscribe({this->topic_name});
+}
+
+ImageSourceKafka::~ImageSourceKafka() {
+    if (this->consumer != NULL) {
+        delete this->consumer;
+    }
+}
+
+cv::Mat ImageSourceKafka::recv() {
+    cppkafka::Message msg = consumer.poll();
+    if (msg) {
+        if (msg.get_error()) {
+            // Ignore EOF notifications from rdkafka
+            if (!msg.is_eof()) {
+                cout << "[+] Received error notification: " << msg.get_error() << endl;
+            }
+        } else {
+            rapidjson::Document d;
+            d.Parse(msg.get_payload());
+            std::string device_id = d["device_id"].GetString();
+            std::string file_name = d["file_name"].GetString();
+
+            std::cerr << "device: " << device_id << "\t" << "file:" << file_name << std::endl;
+            std::stringstream spath;
+            spath << fs_prefix << "/" << device_id << "/" << file_name;
+            std::cerr << "downloading from " << spath.str() << "..." << std::endl;
+
+            RestClient::Response r = RestClient::get(spath.str());
+            if (r.code != 200) {
+                std::cerr << "ERROR CODE = " << r.code << std::endl;
+                return
+            }
+
+            cv::Mat raw_data(1, r.body.size(), CV_8UC1, (char*)r.body.c_str());
+            return cv::imdecode(raw_data, cv::IMREAD_COLOR);
+        }
+    } else {
+        fprintf(stderr, "fail to poll message from topic: %s\n", this->topic_name.c_str());
+    }
+
+    return cv::Mat();
 }

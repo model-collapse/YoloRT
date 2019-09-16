@@ -60,7 +60,7 @@ int32_t main(int32_t argc, char** argv) {
     fflush(stderr);
 
     // creating image source
-    ImageSource src("./test_data", true);
+    ImageSourceKafka src("10.249.77.87:9092", "model_commands", "aaa");
 
     ActivityDetector ad(AD_MODEL_PATH, AD_NAME_PATH, ACT_DET_BATCH_SIZE, gLogger);
     PeopleDetector pd(PC_MODEL_PATH, PC_BATCH_SIZE, gLogger);

@@ -3,6 +3,7 @@
 
 #include <zmq.hpp>
 #include <opencv/cv.h>
+#include <cppkafka/consumer.h>
 
 class ImageSource {
 public:
@@ -18,5 +19,17 @@ private:
     int32_t id;
     std::vector<std::string> file_names;
 };
+
+class ImageSourceKafka {
+public:
+    ImageSourceKafka(const char* broker_addr, const char* topic_name, const char* fs_prefix);
+    ~ImageSourceKafka();
+    cv::Mat recv();
+
+private:
+    cppkafka::Consumer *consumer;
+    std::string topic_name;
+    std::string fs_prefix;
+}
 
 #endif
