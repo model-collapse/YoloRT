@@ -69,7 +69,11 @@ int32_t main(int32_t argc, char** argv) {
     while (true) {
         frames ++;
         auto img = src.recv();
-        
+        if (img.cols == 0 || img.rows == 0) {
+            std::cerr << "empty image" << std::endl;
+            continue;
+        }
+
         auto boxes = pd.detect(img);
         std::cerr << "[people count] " << boxes.size() << " were found" << std::endl;
 
