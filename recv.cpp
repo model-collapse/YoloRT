@@ -88,7 +88,8 @@ ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* group_na
     cppkafka::Configuration config = {
         { "metadata.broker.list", std::string(broker_addr) },
         { "group.id", group_name },
-        { "enable.auto.commit", false }
+        { "enable.auto.commit", false },
+        { "auto.offset.reset", "latest" }
     };
 
     this->consumer = new cppkafka::Consumer(config);
