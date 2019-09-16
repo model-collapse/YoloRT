@@ -6,7 +6,7 @@
 #include <opencv/cv.h>
 #include <cppkafka/consumer.h>
 
-struct ImageData struct {
+struct ImageData {
     cv::Mat img;
     std::string device_id;
     std::string file_name;
