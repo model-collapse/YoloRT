@@ -124,7 +124,8 @@ cv::Mat ImageSourceKafka::recv() {
             if (!msg.is_eof()) {
 		        std::cerr << "[+] Received error notification: " << msg.get_error() << std::endl;
                 std::cerr.flush();
-                std::cerr << "WTF?" << std::endl;
+            } else {
+                std::cerr << "EOF" << std::endl;
             }
         } else {
             rapidjson::Document d;
