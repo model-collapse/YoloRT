@@ -1,4 +1,5 @@
-#include <cppkafka/consumer.h>
+#include <cppkafka/producer.h>
+#include <cppkafka/configuration.h>
 #include "activity_detection.h"
 
 class KafkaPublisher {
