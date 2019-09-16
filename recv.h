@@ -30,6 +30,6 @@ private:
     cppkafka::Consumer *consumer;
     std::string topic_name;
     std::string fs_prefix;
-}
+};
 
 #endif

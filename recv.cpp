@@ -85,12 +85,12 @@ cv::Mat ImageSource::recv() {
 }
 
 ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* topic_name, const char* fs_prefix) {
-    Configuration config = {
+    cppkafka::Configuration config = {
         { "metadata.broker.list", std::string(broker_addr) },
         { "enable.auto.commit", false }
     };
 
-    this->consumer = new Consumer(config);
+    this->consumer = new cppkafka::Consumer(config);
     this->fs_prefix = fs_prefix;
 
     // Print the assigned partitions on assignment
@@ -115,16 +115,17 @@ ImageSourceKafka::~ImageSourceKafka() {
 }
 
 cv::Mat ImageSourceKafka::recv() {
-    cppkafka::Message msg = consumer.poll();
+    cppkafka::Message msg = this->consumer->poll();
     if (msg) {
         if (msg.get_error()) {
             // Ignore EOF notifications from rdkafka
             if (!msg.is_eof()) {
-                cout << "[+] Received error notification: " << msg.get_error() << endl;
+		    std::cout << "[+] Received error notification: " << msg.get_error() << std::endl;
             }
         } else {
             rapidjson::Document d;
-            d.Parse(msg.get_payload());
+	    const cppkafka::Buffer& b = msg.get_payload();
+            d.Parse(std::string(b.begin(), b.end()).c_str());
             std::string device_id = d["device_id"].GetString();
             std::string file_name = d["file_name"].GetString();
 
@@ -136,7 +137,7 @@ cv::Mat ImageSourceKafka::recv() {
             RestClient::Response r = RestClient::get(spath.str());
             if (r.code != 200) {
                 std::cerr << "ERROR CODE = " << r.code << std::endl;
-                return
+                return cv::Mat();
             }
 
             cv::Mat raw_data(1, r.body.size(), CV_8UC1, (char*)r.body.c_str());
