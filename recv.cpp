@@ -129,6 +129,7 @@ cv::Mat ImageSourceKafka::recv() {
             d.Parse(std::string(b.begin(), b.end()).c_str());
             std::string device_id = d["device_id"].GetString();
             std::string file_name = d["file_name"].GetString();
+            this->consumer->commit(msg);
 
             std::cerr << "device: " << device_id << "\t" << "file:" << file_name << std::endl;
             std::stringstream spath;
@@ -145,7 +146,6 @@ cv::Mat ImageSourceKafka::recv() {
             return cv::imdecode(raw_data, cv::IMREAD_COLOR);
         }
 
-        this->consumer->commit(msg);
     } else {
         fprintf(stderr, "fail to poll message from topic: %s\n", this->topic_name.c_str());
     }
