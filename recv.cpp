@@ -107,7 +107,7 @@ ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* group_na
     this->topic_name = topic_name;
 
     this->consumer->subscribe({this->topic_name});
-    this->consumer->set_timeout(30 * 1000);
+    this->consumer->set_timeout(std::chrono::milliseconds(30 * 1000));
 }
 
 ImageSourceKafka::~ImageSourceKafka() {
