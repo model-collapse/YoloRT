@@ -122,7 +122,7 @@ cv::Mat ImageSourceKafka::recv() {
             // Ignore EOF notifications from rdkafka
             if (!msg.is_eof()) {
 		        std::cerr << "[+] Received error notification: " << msg.get_error() << std::endl;
-                fflush(stderr);
+                std::cerr.flush();
             }
         } else {
             rapidjson::Document d;
@@ -140,7 +140,7 @@ cv::Mat ImageSourceKafka::recv() {
             RestClient::Response r = RestClient::get(spath.str());
             if (r.code != 200) {
                 std::cerr << "ERROR CODE = " << r.code << std::endl;
-                fflush(stderr);
+                std::cerr.flush();
                 return cv::Mat();
             }
 
