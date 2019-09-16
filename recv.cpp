@@ -121,7 +121,8 @@ cv::Mat ImageSourceKafka::recv() {
         if (msg.get_error()) {
             // Ignore EOF notifications from rdkafka
             if (!msg.is_eof()) {
-		    std::cout << "[+] Received error notification: " << msg.get_error() << std::endl;
+		        std::cerr << "[+] Received error notification: " << msg.get_error() << std::endl;
+                fflush(stderr);
             }
         } else {
             rapidjson::Document d;
@@ -148,6 +149,7 @@ cv::Mat ImageSourceKafka::recv() {
 
     } else {
         fprintf(stderr, "fail to poll message from topic: %s\n", this->topic_name.c_str());
+        fflush(stderr);
     }
 
     return cv::Mat();
