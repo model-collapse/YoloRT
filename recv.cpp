@@ -117,12 +117,14 @@ ImageSourceKafka::~ImageSourceKafka() {
 
 cv::Mat ImageSourceKafka::recv() {
     cppkafka::Message msg = this->consumer->poll();
+    std::cerr << "here" << std::endl;
     if (msg) {
         if (msg.get_error()) {
             // Ignore EOF notifications from rdkafka
             if (!msg.is_eof()) {
 		        std::cerr << "[+] Received error notification: " << msg.get_error() << std::endl;
                 std::cerr.flush();
+                std::cerr << "WTF?" << endl;
             }
         } else {
             rapidjson::Document d;
