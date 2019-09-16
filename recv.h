@@ -10,7 +10,7 @@ struct ImageData struct {
     cv::Mat img;
     std::string device_id;
     std::string file_name;
-}
+};
 
 class ImageSource {
 public:
