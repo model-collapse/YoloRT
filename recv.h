@@ -22,7 +22,7 @@ private:
 
 class ImageSourceKafka {
 public:
-    ImageSourceKafka(const char* broker_addr, const char* topic_name, const char* fs_prefix);
+    ImageSourceKafka(const char* broker_addr, const char* group_name, const char* topic_name, const char* fs_prefix);
     ~ImageSourceKafka();
     cv::Mat recv();
 

@@ -84,9 +84,10 @@ cv::Mat ImageSource::recv() {
     return cv::imdecode(raw_data, cv::IMREAD_COLOR);
 }
 
-ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* topic_name, const char* fs_prefix) {
+ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* group_name, const char* topic_name, const char* fs_prefix) {
     cppkafka::Configuration config = {
         { "metadata.broker.list", std::string(broker_addr) },
+        { "group.id", group_name },
         { "enable.auto.commit", false }
     };
 
@@ -124,7 +125,7 @@ cv::Mat ImageSourceKafka::recv() {
             }
         } else {
             rapidjson::Document d;
-	    const cppkafka::Buffer& b = msg.get_payload();
+	        const cppkafka::Buffer& b = msg.get_payload();
             d.Parse(std::string(b.begin(), b.end()).c_str());
             std::string device_id = d["device_id"].GetString();
             std::string file_name = d["file_name"].GetString();
@@ -143,6 +144,8 @@ cv::Mat ImageSourceKafka::recv() {
             cv::Mat raw_data(1, r.body.size(), CV_8UC1, (char*)r.body.c_str());
             return cv::imdecode(raw_data, cv::IMREAD_COLOR);
         }
+
+        this->consumer->commit(msg);
     } else {
         fprintf(stderr, "fail to poll message from topic: %s\n", this->topic_name.c_str());
     }
