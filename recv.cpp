@@ -107,7 +107,10 @@ ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* group_na
 
     this->topic_name = topic_name;
 
+    auto tp = cppkafka::TopicPartition(topic_name, 0);
+    tp.set_offset(TopicPartition::OFFSET_END);
     this->consumer->subscribe({this->topic_name});
+    this->consumer->assign({tp});
     this->consumer->set_timeout(std::chrono::milliseconds(30 * 1000));
 }
 
