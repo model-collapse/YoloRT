@@ -2,8 +2,15 @@
 #define _RECV_H_
 
 #include <zmq.hpp>
+#include <string>
 #include <opencv/cv.h>
 #include <cppkafka/consumer.h>
+
+struct ImageData struct {
+    cv::Mat img;
+    std::string device_id;
+    std::string file_name;
+}
 
 class ImageSource {
 public:
@@ -24,7 +31,7 @@ class ImageSourceKafka {
 public:
     ImageSourceKafka(const char* broker_addr, const char* group_name, const char* topic_name, const char* fs_prefix);
     ~ImageSourceKafka();
-    cv::Mat recv();
+    ImageData recv();
 
 private:
     cppkafka::Consumer *consumer;

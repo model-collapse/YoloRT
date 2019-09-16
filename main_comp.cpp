@@ -3,6 +3,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "recv.h"
+#include "pub.h"
 #include "people_counting.h"
 #include "activity_detection.h"
 
@@ -61,6 +62,7 @@ int32_t main(int32_t argc, char** argv) {
 
     // creating image source
     ImageSourceKafka src("10.249.77.87:9092", "1" , "model_commands", "http://10.249.77.82:8000");
+    KafkaPublisher pub("10.249.77.87:9092", "model_results");
 
     ActivityDetector ad(AD_MODEL_PATH, AD_NAME_PATH, ACT_DET_BATCH_SIZE, gLogger);
     PeopleDetector pd(PC_MODEL_PATH, PC_BATCH_SIZE, gLogger);
@@ -68,28 +70,19 @@ int32_t main(int32_t argc, char** argv) {
     int32_t frames = 0;
     while (true) {
         frames ++;
-        auto img = src.recv();
-        if (img.cols == 0 || img.rows == 0) {
+        auto img_data = src.recv();
+        if (img_data.img.cols == 0 || img_data.img.rows == 0) {
             std::cerr << "empty image" << std::endl;
             continue;
         }
 
-        auto boxes = pd.detect(img);
+        auto boxes = pd.detect(img_data.img);
         std::cerr << "[people count] " << boxes.size() << " were found" << std::endl;
 
         auto persons = ad.detect(img, boxes);
         std::cerr << "[marked]" << std::endl;
 
-        cv::Mat canvas = img.clone();
-        for (auto person : persons) {
-            mark_a_labeled_person(canvas, person);
-        }
-
-        char pathBuf[30];
-        sprintf(pathBuf, "dump/frame_%d.jpg", frames);
-        cv::imwrite(pathBuf, canvas);
-        sprintf(pathBuf, "dump/orig_%d.jpg", frames);
-        cv::imwrite(pathBuf, img);
+        
 
         if (frames >= 500) {
             break;

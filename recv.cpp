@@ -116,7 +116,7 @@ ImageSourceKafka::~ImageSourceKafka() {
     }
 }
 
-cv::Mat ImageSourceKafka::recv() {
+ImageData ImageSourceKafka::recv() {
     cppkafka::Message msg = this->consumer->poll();
     std::cerr << "here" << std::endl;
     if (msg) {
@@ -145,11 +145,11 @@ cv::Mat ImageSourceKafka::recv() {
             if (r.code != 200) {
                 std::cerr << "ERROR CODE = " << r.code << std::endl;
                 std::cerr.flush();
-                return cv::Mat();
+                return {cv::Mat(), "", ""};
             }
 
             cv::Mat raw_data(1, r.body.size(), CV_8UC1, (char*)r.body.c_str());
-            return cv::imdecode(raw_data, cv::IMREAD_COLOR);
+            return {cv::imdecode(raw_data, cv::IMREAD_COLOR), device_id, file_name};
         }
 
     } else {
@@ -157,5 +157,5 @@ cv::Mat ImageSourceKafka::recv() {
         fflush(stderr);
     }
 
-    return cv::Mat();
+    return {cv::Mat(), "", ""};
 }
