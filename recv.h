@@ -29,6 +29,7 @@ public:
 private:
     cppkafka::Consumer *consumer;
     std::string topic_name;
+    std::string group_name;
     std::string fs_prefix;
 };
 
