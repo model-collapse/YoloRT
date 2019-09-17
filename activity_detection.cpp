@@ -92,7 +92,15 @@ nvinfer1::ICudaEngine* ActivityDetector::init_engine(std::string cfg_path, std::
 }
 
 cv::Mat get_patch(cv::Mat img, NvDsInferParseObjectInfo box) {
-    cv::Rect rect(box.left, box.top, box.width, box.height);
+    float margin_scale = EXT_SCALE / 2;
+    int32_t margin_x = (int)(box.width * margin_scale);
+    int32_t margin_y = (int)(box.height * margin_scale);
+
+    int32_t x = std::max(box.left - margin_x, 0);
+    int32_t y = std::max(box.top - margin_y, 0);
+    int32_t w = std::min(box.width + 2 * margin_x, img.cols - x);
+    int32_t h = std::min(box.height + 2 * margin_y, img.rows - y);
+    cv::Rect rect(x, y, w, h);
     return img(rect);
 }
 
