@@ -91,7 +91,7 @@ nvinfer1::ICudaEngine* ActivityDetector::init_engine(std::string cfg_path, std::
     return yolo.createEngine();
 }
 
-cv::Mat get_patch(cv::Mat img, NvDsInferParseObjectInfo box) {
+cv::Mat ActivityDetector::get_patch(cv::Mat img, NvDsInferParseObjectInfo box) {
     float margin_scale = EXT_SCALE / 2;
     int32_t margin_x = (int)(box.width * margin_scale);
     int32_t margin_y = (int)(box.height * margin_scale);
