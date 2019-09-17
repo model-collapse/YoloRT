@@ -83,9 +83,5 @@ int32_t main(int32_t argc, char** argv) {
         std::cerr << "[marked]" << std::endl;
 
        	pub.publish(img_data.device_id, img_data.file_name, persons); 
-
-        if (frames >= 500) {
-            break;
-        }
     }
 }

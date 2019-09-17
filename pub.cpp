@@ -32,8 +32,8 @@ void KafkaPublisher::publish(std::string device_id, std::string file_name, std::
         rapidjson::Value box(rapidjson::kObjectType);
         rapidjson::Value activities(rapidjson::kArrayType);
         for (auto act : p.activities) {
-            rapidjson::Value av();
-            av.SetString(act.activity.c_str(), act.activity.size());
+            rapidjson::Value av(act.activity.c_str(), act.activity.size(), allocator);
+            //av.SetString(act.activity.c_str(), act.activity.size());
             activities.PushBack(av, allocator);
         }
         
