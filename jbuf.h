@@ -99,7 +99,7 @@ public:
 };
 
 std::string dims_to_str(const nvinfer1::Dims& d) {
-    std::stringsream s;
+    std::stringstream s;
     for (int32_t i = 0; i < d.nbDims - 1; i++) {
         s << d.d[i] << " * ";
     }
