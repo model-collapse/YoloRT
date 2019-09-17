@@ -155,8 +155,6 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
     return ret;
 }
 
-const float ActivityDetector::EXT_SCALE;
-
 ActivityDetector::~ActivityDetector() {
 
 }
