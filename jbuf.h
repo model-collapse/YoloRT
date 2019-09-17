@@ -98,7 +98,7 @@ public:
     void operator()(void* ptr) const { cudaFree(ptr); }
 };
 
-std::string dims_to_str(const nvinfer1::Dims& d) {
+inline std::string dims_to_str(const nvinfer1::Dims& d) {
     std::stringstream s;
     for (int32_t i = 0; i < d.nbDims - 1; i++) {
         s << d.d[i] << " * ";
