@@ -98,6 +98,16 @@ public:
     void operator()(void* ptr) const { cudaFree(ptr); }
 };
 
+std::string dims_to_str(const nvinfer1::Dims& d) {
+    std::stringsream s;
+    for (int32_t i = 0; i < d.nbDims - 1; i++) {
+        s << d.d[i] << " * ";
+    }
+    s << d.d[d.nbDims - 1];
+
+    return s.str();
+}
+
 using ManagedBuffer = GenericBuffer<ManagedAllocator, ManagedFree>;
 
 class UnifiedBufManager {
@@ -125,7 +135,7 @@ class UnifiedBufManager {
             layerInfo.buffer = manBuf->data();
             layerInfo.dataType = NvDsInferDataType(int(dataType));
             layerInfo.layerName = mEngine->getBindingName(i);
-            std::cerr << "binding layer@" << i << ": " << layerInfo.layerName << endl;
+            std::cerr << "binding layer@" << i << ": " << layerInfo.layerName << " " << allocationSize << "[" << mBatchSize << " * " << dims_to_str(dims) << "]" <<endl;
             layerInfo.bindingIndex = i;
             layerInfo.dims.numDims = dims.nbDims;
             layerInfo.dims.numElements = 1;
