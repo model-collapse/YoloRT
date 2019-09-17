@@ -96,10 +96,10 @@ cv::Mat ActivityDetector::get_patch(cv::Mat img, NvDsInferParseObjectInfo box) {
     int32_t margin_x = (int)(box.width * margin_scale);
     int32_t margin_y = (int)(box.height * margin_scale);
 
-    int32_t x = std::max(box.left - margin_x, 0);
-    int32_t y = std::max(box.top - margin_y, 0);
-    int32_t w = std::min(box.width + 2 * margin_x, img.cols - x);
-    int32_t h = std::min(box.height + 2 * margin_y, img.rows - y);
+    int32_t x = std::max((int32_t)box.left - margin_x, 0);
+    int32_t y = std::max((int32_t)box.top - margin_y, 0);
+    int32_t w = std::min((int32_t)box.width + 2 * margin_x, (int32_t)img.cols - x);
+    int32_t h = std::min((int32_t)box.height + 2 * margin_y, (int32_t)img.rows - y);
     cv::Rect rect(x, y, w, h);
     return img(rect);
 }
