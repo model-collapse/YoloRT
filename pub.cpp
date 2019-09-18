@@ -2,7 +2,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
-#include <time.h>
+#include <chrono>
 
 KafkaPublisher::KafkaPublisher(const char* address, const char* topic_name) {
     cppkafka::Configuration config = {

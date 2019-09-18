@@ -2,7 +2,7 @@
 #include "nvdsparsebbox_Yolo.h"
 #include "nvdsinfer_custom_impl.h"
 #include "nvdsparsebbox_Yolo.h"
-#include <time.h>
+#include <chrono>
 
 struct InferDeleter
 {

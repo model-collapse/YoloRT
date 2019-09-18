@@ -4,7 +4,7 @@
 #include "dirent.h"
 #include <rapidjson/document.h>
 #include "restclient-cpp/restclient.h"
-#include <time.h>
+#include <chrono>
 
 #define MAX_BUF_SIZE 1000000 // 1M buffer
 
