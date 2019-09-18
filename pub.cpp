@@ -70,9 +70,9 @@ void KafkaPublisher::publish(std::string device_id, std::string file_name, std::
     this->producer->flush();
     auto end_prod = std::chrono::system_clock::now();
 
-    auto msecs = [](std::chrono::time_point<> beg, std::chrono::time_point<> end) -> int {
-        return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
-    };
+    auto msecs = [](std::chrono::system_clock::time_point beg, std::chrono::system_clock::time_point end) -> int {
+            return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
+        };
 
     std::cerr << "[PD time] | json:" << msecs(beg_doc, end_doc) << "ms, prod:" << msecs(beg_prod, end_prod) << "ms" << std::endl;
 }

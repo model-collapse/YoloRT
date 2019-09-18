@@ -126,9 +126,9 @@ ImageData ImageSourceKafka::recv() {
     cppkafka::Message msg = this->consumer->poll();
     auto end_poll = std::chrono::system_clock::now();
     std::cerr << "here" << std::endl;
-    auto msecs = [](std::chrono::time_point<> beg, std::chrono::time_point<> end) -> int {
-        return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
-    };
+    auto msecs = [](std::chrono::system_clock::time_point beg, std::chrono::system_clock::time_point end) -> int {
+            return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
+        };
 
     if (msg) {
         if (msg.get_error()) {
