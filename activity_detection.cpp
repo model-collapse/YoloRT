@@ -172,7 +172,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
             res += names.size();
         }
 
-        clock_t beg_post = clock();
+        clock_t end_post = clock();
 
         auto secs = [](clock_t beg, clock_t end) -> float {
             return (float)(end - beg) / CLOCKS_PER_SEC;
