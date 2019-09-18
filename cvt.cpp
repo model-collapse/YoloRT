@@ -49,7 +49,8 @@ nvinfer1::ICudaEngine* initEngine(const char* cfg_path, const char* weight_path,
 int32_t main(int32_t argc, char** argv) {
     nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
     std::cerr << "#DLA core = " << builder->getNbDLACore() << std::endl;
-    
+    return 0;
+
     nvinfer1::ICudaEngine* engine = initEngine(CFG_PATH, WTS_PATH, pc_input_blob_name, builder);
 
     IHostMemory *serializedModel = engine->serialize();
