@@ -18,10 +18,10 @@ struct InferDeleter
     }
 };
 
-std::vecotr<std::string> string_split(std::string line, std::string sep) {
-    boost::tokenizer<boost::char_separator<char> > tokens(line, boost::char_seprator<char>(sep.c_str()));
-    std::vecotr<std::string> ret;
-    for (auto iter = tokens.begin(); iter != toekns.eng(); iter++) {
+std::vector<std::string> string_split(std::string line, std::string sep) {
+    boost::tokenizer<boost::char_separator<char> > tokens(line, boost::char_separator<char>(sep.c_str()));
+    std::vector<std::string> ret;
+    for (auto iter = tokens.begin(); iter != tokens.end(); iter++) {
         ret.push_back(*iter);
     }
 
@@ -45,7 +45,7 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
     this->names.clear();
     while (std::getline(ifs, line)) {
         if (line.size() > 1) {
-            auto eles = string_split(line);
+            auto eles = string_split(line, "\t");
             this->names.push_back(eles[0]);
             this->thresholds.push_back(std::stof(eles[1]));
         }
@@ -86,7 +86,9 @@ ActivityDetector::ActivityDetector(std::string model_path, std::string name_path
     this->names.clear();
     while (std::getline(ifs, line)) {
         if (line.size() > 1) {
-            this->names.push_back(line);
+            auto eles = string_split(line, "\t");
+            this->names.push_back(eles[0]);
+            this->thresholds.push_back(std::stof(eles[1]));
         }
     }
     ifs.close();
