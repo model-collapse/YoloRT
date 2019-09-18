@@ -174,7 +174,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
 
         auto end_post = std::chrono::system_clock::now();
 
-        auto msecs = [](std::chrono::time_point beg, std::chrono::time_point end) -> int {
+        auto msecs = [](std::chrono::time_point<> beg, std::chrono::time_point<> end) -> int {
             return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
         };
 

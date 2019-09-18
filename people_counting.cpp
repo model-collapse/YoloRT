@@ -145,7 +145,7 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         calib_objs[i] = nf;
     }
 
-    auto msecs = [](std::chrono::time_point beg, std::chrono::time_point end) -> int {
+    auto msecs = [](std::chrono::time_point<> beg, std::chrono::time_point<> end) -> int {
         return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
     };
 
