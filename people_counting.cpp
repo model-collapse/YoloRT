@@ -2,6 +2,7 @@
 #include "nvdsparsebbox_Yolo.h"
 #include "nvdsinfer_custom_impl.h"
 #include "nvdsparsebbox_Yolo.h"
+#include <time.h>
 
 struct InferDeleter
 {
@@ -94,17 +95,21 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     std::vector<NvDsInferParseObjectInfo> objs;
     std::vector<NvDsInferParseObjectInfo> calib_objs;
 
+    clock_t beg_buf = clock();
     float* p = (float*)this->buffers->getBuffer(std::string(input_blob_name));
     if (NULL == p) {
         std::cerr << "null pointer of input buffer" << std::endl;
     }
 
     mat_8u3c_to_darknet_blob(img, input_tensor_height, input_tensor_width, input_tensor_depth, p);
+    clock_t end_buf = clock();
+    clock_t beg_exe = clock();
     auto status = this->ctx->execute(batch_size, buffers->getDeviceBindings().data());
     if (!status) {
         std::cerr << "execution failed!" << std::endl;
         return objs;    
     }
+    clock_t end_exe = clock();
 
     NvDsInferNetworkInfo networkInfo {
         .width = input_tensor_width,
@@ -116,10 +121,12 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         .numClassesConfigured = NUM_CLASSES_YOLO,
     };
     
+    clock_t beg_post = clock();
     bool res = NvDsInferParseYoloV3(this->layer_info, networkInfo, params, objs, kANCHORS, kMASKS);
     if (!res) {
         std::cerr << "fail to call NvDsInferParseYoloV3" << std::endl;
     }
+    clock_t end_post = clock();
 
     float xScale = (float)img.cols / input_tensor_width;
     float yScale = (float)img.rows / input_tensor_height;
@@ -138,6 +145,11 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         calib_objs[i] = nf;
     }
 
+    auto secs = [](clock_t beg, clock_t end) -> float {
+        return (float)(end - beg) / CLOCKS_PER_SEC;
+    };
+
+    std::cerr << "[PC time cost] | buffer:" << secs(beg_buf, end_buf) << ", exe:" << secs(beg_exe, end_exe) << ", post:" << secs(beg_post, end_post) << std::endl;
     return calib_objs;
 }
 

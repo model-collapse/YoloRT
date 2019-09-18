@@ -202,8 +202,8 @@ decodeYoloV3Tensor(
     float avgMaxProb = 0;
     float avgObjectness = 0;
 
-    fprintf(stderr, "grid_size, stride = (%d, %d)\n", gridSize, stride);
-    fprintf(stderr, "thres = %f\n", probThresh);
+    //fprintf(stderr, "grid_size, stride = (%d, %d)\n", gridSize, stride);
+    //fprintf(stderr, "thres = %f\n", probThresh);
     std::vector<NvDsInferParseObjectInfo> binfo;
     for (uint y = 0; y < gridSize; ++y)
     {

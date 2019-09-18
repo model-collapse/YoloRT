@@ -126,7 +126,6 @@ void YoloLayerV3::serialize(void* buffer) const
 
 nvinfer1::IPluginV2* YoloLayerV3::clone() const
 {
-    std::cerr << "cloning yolov3" << std::endl;
     return new YoloLayerV3 (m_NumBoxes, m_NumClasses, m_GridSize);
 }
 

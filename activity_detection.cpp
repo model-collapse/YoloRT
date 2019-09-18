@@ -2,6 +2,7 @@
 #include "img.h"
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
+#include <time.h>
 
 static const float CLS_THRES = 0.3;
 
@@ -122,6 +123,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
     std::vector<LabeledPeople> ret;
 
     for (int32_t off = 0; off < (int32_t)boxes.size(); off += this->batch_size) {
+        clock_t beg_buf = clock();
         float* p = (float*)this->buffers->getBuffer(std::string(input_blob_name));
         int32_t cnt = 0;
         int32_t stride = input_tensor_width * input_tensor_height * input_tensor_depth;
@@ -130,13 +132,17 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
             mat_8u3c_to_darknet_blob(patch, input_tensor_height, input_tensor_width, input_tensor_depth, p + i * stride);
             cnt ++;
         }
+        clock_t end_buf = clock();
 
+        clock_t beg_exe = clock();
         bool status = this->ctx->execute(cnt, this->buffers->getDeviceBindings().data());
         if (!status) {
             std::cerr << "execution failed!" << std::endl;
             return std::vector<LabeledPeople>();    
         }
+        clock_t end_exe = clock();
 
+        clock_t beg_post = clock();
         float* res = (float*)this->buffers->getBuffer(std::string(output_blob_name));
         assert(res != NULL);
         for (int32_t k = 0; k < cnt; k++) {
@@ -161,9 +167,16 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
                 .activities = activities,
             };
             ret.push_back(people);
-
             res += names.size();
         }
+
+        clock_t beg_post = clock();
+
+        auto secs = [](clock_t beg, clock_t end) -> float {
+            return (float)(end - beg) / CLOCKS_PER_SEC;
+        };
+
+        std::cerr << "[AD time cost@" << off << "] | buffer:" << secs(beg_buf, end_buf) << ", exe:" << secs(beg_exe, end_exe) << ", post:" << secs(beg_post, end_post) << std::endl;
     }
 
     return ret;
