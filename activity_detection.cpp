@@ -2,7 +2,7 @@
 #include "img.h"
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
-#include <time.h>
+#include <chrono>
 
 static const float CLS_THRES = 0.3;
 
@@ -125,7 +125,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
     std::vector<LabeledPeople> ret;
 
     for (int32_t off = 0; off < (int32_t)boxes.size(); off += this->batch_size) {
-        clock_t beg_buf = clock();
+        auto beg_buf = std::chrono::system_clock::now();
         float* p = (float*)this->buffers->getBuffer(std::string(input_blob_name));
         int32_t cnt = 0;
         int32_t stride = input_tensor_width * input_tensor_height * input_tensor_depth;
@@ -134,17 +134,17 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
             mat_8u3c_to_darknet_blob(patch, input_tensor_height, input_tensor_width, input_tensor_depth, p + i * stride);
             cnt ++;
         }
-        clock_t end_buf = clock();
+        auto end_buf = std::chrono::system_clock::now();
 
-        clock_t beg_exe = clock();
+        auto beg_exe = std::chrono::system_clock::now();
         bool status = this->ctx->execute(cnt, this->buffers->getDeviceBindings().data());
         if (!status) {
             std::cerr << "execution failed!" << std::endl;
             return std::vector<LabeledPeople>();    
         }
-        clock_t end_exe = clock();
+        auto end_exe = std::chrono::system_clock::now();
 
-        clock_t beg_post = clock();
+        auto beg_post = std::chrono::system_clock::now();
         float* res = (float*)this->buffers->getBuffer(std::string(output_blob_name));
         assert(res != NULL);
         for (int32_t k = 0; k < cnt; k++) {
@@ -172,13 +172,13 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
             res += names.size();
         }
 
-        clock_t end_post = clock();
+        auto end_post = std::chrono::system_clock::now();
 
-        auto secs = [](clock_t beg, clock_t end) -> float {
-            return (float)(end - beg) / CLOCKS_PER_SEC;
+        auto msecs = [](std::chrono::time_point beg, std::chrono::time_point end) -> int {
+            return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
         };
 
-        std::cerr << "[AD time cost@" << off << "] | buffer:" << secs(beg_buf, end_buf) << ", exe:" << secs(beg_exe, end_exe) << ", post:" << secs(beg_post, end_post) << std::endl;
+        std::cerr << "[AD time cost@" << off << "] | buffer:" << msecs(beg_buf, end_buf) << "ms, exe:" << msecs(beg_exe, end_exe) << "ms, post:" << msecs(beg_post, end_post) << "ms" << std::endl;
     }
 
     return ret;

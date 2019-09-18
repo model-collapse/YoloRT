@@ -18,7 +18,7 @@ KafkaPublisher::~KafkaPublisher() {
 }
 
 void KafkaPublisher::publish(std::string device_id, std::string file_name, std::vector<LabeledPeople> people) {
-    clock_t beg_doc = clock();
+    auto beg_doc = std::chrono::system_clock::now();
     rapidjson::Document d;
     d.SetObject();
     rapidjson::Document::AllocatorType& allocator = d.GetAllocator();
@@ -58,21 +58,21 @@ void KafkaPublisher::publish(std::string device_id, std::string file_name, std::
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     d.Accept(writer);
 
-    clock_t end_doc = clock();
+    auto end_doc = std::chrono::system_clock::now();
 
     std::string json_data = std::string(buffer.GetString());
     std::cerr << "json = " << json_data << std::endl;
 
-    clock_t beg_prod = clock();
+    auto beg_prod = std::chrono::system_clock::now();
     cppkafka::MessageBuilder builder(this->topic_name);
     builder.payload(json_data);
     this->producer->produce(builder);
     this->producer->flush();
-    clock_t end_prod = clock();
+    auto end_prod = std::chrono::system_clock::now();
 
-    auto secs = [](clock_t beg, clock_t end) -> float {
-        return (float)(end - beg) / CLOCKS_PER_SEC;
+    auto msecs = [](std::chrono::time_point beg, std::chrono::time_point end) -> int {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
     };
 
-    std::cerr << "[PD time] | json:" << secs(beg_doc, end_doc) << ", prod:" << secs(beg_prod, end_prod) << std::endl;
+    std::cerr << "[PD time] | json:" << msecs(beg_doc, end_doc) << "ms, prod:" << msecs(beg_prod, end_prod) << "ms" << std::endl;
 }

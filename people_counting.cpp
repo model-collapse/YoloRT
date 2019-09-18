@@ -95,21 +95,21 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     std::vector<NvDsInferParseObjectInfo> objs;
     std::vector<NvDsInferParseObjectInfo> calib_objs;
 
-    clock_t beg_buf = clock();
+    auto beg_buf = std::chrono::system_clock::now();
     float* p = (float*)this->buffers->getBuffer(std::string(input_blob_name));
     if (NULL == p) {
         std::cerr << "null pointer of input buffer" << std::endl;
     }
 
     mat_8u3c_to_darknet_blob(img, input_tensor_height, input_tensor_width, input_tensor_depth, p);
-    clock_t end_buf = clock();
-    clock_t beg_exe = clock();
+    auto end_buf = std::chrono::system_clock::now();
+    auto beg_exe = std::chrono::system_clock::now();
     auto status = this->ctx->execute(batch_size, buffers->getDeviceBindings().data());
     if (!status) {
         std::cerr << "execution failed!" << std::endl;
         return objs;    
     }
-    clock_t end_exe = clock();
+    auto end_exe = std::chrono::system_clock::now();
 
     NvDsInferNetworkInfo networkInfo {
         .width = input_tensor_width,
@@ -121,12 +121,12 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         .numClassesConfigured = NUM_CLASSES_YOLO,
     };
     
-    clock_t beg_post = clock();
+    auto beg_post = std::chrono::system_clock::now();
     bool res = NvDsInferParseYoloV3(this->layer_info, networkInfo, params, objs, kANCHORS, kMASKS);
     if (!res) {
         std::cerr << "fail to call NvDsInferParseYoloV3" << std::endl;
     }
-    clock_t end_post = clock();
+    auto end_post = std::chrono::system_clock::now();
 
     float xScale = (float)img.cols / input_tensor_width;
     float yScale = (float)img.rows / input_tensor_height;
@@ -145,11 +145,11 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
         calib_objs[i] = nf;
     }
 
-    auto secs = [](clock_t beg, clock_t end) -> float {
-        return (float)(end - beg) / CLOCKS_PER_SEC;
+    auto msecs = [](std::chrono::time_point beg, std::chrono::time_point end) -> int {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
     };
 
-    std::cerr << "[PC time cost] | buffer:" << secs(beg_buf, end_buf) << ", exe:" << secs(beg_exe, end_exe) << ", post:" << secs(beg_post, end_post) << std::endl;
+    std::cerr << "[PC time cost] | buffer:" << msecs(beg_buf, end_buf) << "ms, exe:" << msecs(beg_exe, end_exe) << "ms, post:" << msecs(beg_post, end_post) << "ms" << std::endl;
     return calib_objs;
 }
 
