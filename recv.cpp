@@ -161,7 +161,7 @@ ImageData ImageSourceKafka::recv() {
                 return {cv::Mat(), "", ""};
             }
 
-            std::cerr << "[MSG time] | poll:" << secs(beg_http, end_http) << ", download:" << secs(beg_http, end_http) << std::endl;
+            std::cerr << "[MSG time] | poll:" << secs(beg_poll, end_poll) << ", download:" << secs(beg_http, end_http) << std::endl;
             cv::Mat raw_data(1, r.body.size(), CV_8UC1, (char*)r.body.c_str());
             return {cv::imdecode(raw_data, cv::IMREAD_COLOR), device_id, file_name};
         }
