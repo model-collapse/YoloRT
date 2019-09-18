@@ -2,6 +2,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
+#include <time.h>
 
 KafkaPublisher::KafkaPublisher(const char* address, const char* topic_name) {
     cppkafka::Configuration config = {
@@ -17,6 +18,7 @@ KafkaPublisher::~KafkaPublisher() {
 }
 
 void KafkaPublisher::publish(std::string device_id, std::string file_name, std::vector<LabeledPeople> people) {
+    clock_t beg_doc = clock();
     rapidjson::Document d;
     d.SetObject();
     rapidjson::Document::AllocatorType& allocator = d.GetAllocator();
@@ -56,11 +58,21 @@ void KafkaPublisher::publish(std::string device_id, std::string file_name, std::
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     d.Accept(writer);
 
+    clock_t end_doc = clock();
+
     std::string json_data = std::string(buffer.GetString());
     std::cerr << "json = " << json_data << std::endl;
 
+    clock_t beg_prod = clock();
     cppkafka::MessageBuilder builder(this->topic_name);
     builder.payload(json_data);
     this->producer->produce(builder);
     this->producer->flush();
+    clock_t end_prod = clock();
+
+    auto secs = [](clock_t beg, clock_t end) -> float {
+        return (float)(end - beg) / CLOCKS_PER_SEC;
+    };
+
+    std::cerr << "[PD time] | json:" << secs(beg_doc, end_prod) << ", prod:" << secs(beg_prod, end_prod) << std::endl;
 }
