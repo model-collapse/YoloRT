@@ -262,7 +262,7 @@ decodeYoloV3Tensor(
     //std::cerr << "mp: " << avgMaxProb << "\t";
     //std::cerr << "obj: " << avgObjectness << "\t";
 
-    std::cerr << std::endl;
+    //std::cerr << std::endl;
     return binfo;
 }
 
