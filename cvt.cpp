@@ -26,8 +26,8 @@ const char pc_output_blob_names[][20] = {
     "yolo_107"
 };
 
-const char* AD_CFG_PATH = "../../../model/darknet/wwdarknet53v2.cfg";
-const char* AD_WTS_PATH = "../../../model/darknet/wwdarknet53v2_50000.weights";
+const char* AD_CFG_PATH = "../../../model/darknet/fp16/wwdarknet53v2.cfg";
+const char* AD_WTS_PATH = "../../../model/darknet/fp16/wwdarknet53v2_50000.weights";
 
 const char* ad_input_blob_name = "data";
 const char* ad_output_blob_name = "softmax_78";
@@ -48,9 +48,7 @@ nvinfer1::ICudaEngine* initEngine(const char* cfg_path, const char* weight_path,
 
 int32_t main(int32_t argc, char** argv) {
     nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
-    std::cerr << "#DLA core = " << builder->getNbDLACore() << std::endl;
-    return 0;
-
+    builder->setFp16Mode(true);
     nvinfer1::ICudaEngine* engine = initEngine(CFG_PATH, WTS_PATH, pc_input_blob_name, builder);
 
     IHostMemory *serializedModel = engine->serialize();
