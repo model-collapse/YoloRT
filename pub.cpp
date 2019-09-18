@@ -74,5 +74,5 @@ void KafkaPublisher::publish(std::string device_id, std::string file_name, std::
         return (float)(end - beg) / CLOCKS_PER_SEC;
     };
 
-    std::cerr << "[PD time] | json:" << secs(beg_doc, end_prod) << ", prod:" << secs(beg_prod, end_prod) << std::endl;
+    std::cerr << "[PD time] | json:" << secs(beg_doc, end_doc) << ", prod:" << secs(beg_prod, end_prod) << std::endl;
 }
