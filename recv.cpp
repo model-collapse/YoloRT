@@ -4,6 +4,7 @@
 #include "dirent.h"
 #include <rapidjson/document.h>
 #include "restclient-cpp/restclient.h"
+#include <time.h>
 
 #define MAX_BUF_SIZE 1000000 // 1M buffer
 
@@ -121,8 +122,14 @@ ImageSourceKafka::~ImageSourceKafka() {
 }
 
 ImageData ImageSourceKafka::recv() {
+    clock_t beg_poll = clock();
     cppkafka::Message msg = this->consumer->poll();
+    clock_t end_poll = clock();
     std::cerr << "here" << std::endl;
+    auto secs = [](clock_t beg, clock_t end) -> float {
+        return (float)(end - beg) / CLOCKS_PER_SEC;
+    };
+
     if (msg) {
         if (msg.get_error()) {
             // Ignore EOF notifications from rdkafka
@@ -145,13 +152,16 @@ ImageData ImageSourceKafka::recv() {
             spath << fs_prefix << "/" << device_id << "/" << file_name;
             std::cerr << "downloading from " << spath.str() << "..." << std::endl;
 
+            clock_t beg_http = clock();
             RestClient::Response r = RestClient::get(spath.str());
+            clock_t end_http = clock();
             if (r.code != 200) {
                 std::cerr << "ERROR CODE = " << r.code << std::endl;
                 std::cerr.flush();
                 return {cv::Mat(), "", ""};
             }
 
+            std::cerr << "[MSG time] | poll:" << secs(beg_http, end_http) << ", download:" << secs(beg_http, end_http) << std::endl;
             cv::Mat raw_data(1, r.body.size(), CV_8UC1, (char*)r.body.c_str());
             return {cv::imdecode(raw_data, cv::IMREAD_COLOR), device_id, file_name};
         }
