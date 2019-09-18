@@ -10,7 +10,7 @@
 const char* PC_MODEL_PATH = "../../../model/tensorRT/yolov3_person.trt.dat";
 const int32_t PC_BATCH_SIZE = 1;
 const char* AD_MODEL_PATH = "../../../model/tensorRT/wwdarknet53v2.trt.dat";
-const char* AD_NAME_PATH = "../../../model/darknet/activity_wework.names";
+const char* AD_NAME_PATH = "../../../model/darknet/activity_wework.names.with_thres";
 const int32_t ACT_DET_BATCH_SIZE = 4;
 
 const int32_t MAX_TEXT_LEN = 20;

@@ -1,5 +1,7 @@
 #include "activity_detection.h"
 #include "img.h"
+#include <boost/tokenizer.hpp>
+#include <boost/foreach.hpp>
 
 static const float CLS_THRES = 0.3;
 
@@ -14,6 +16,16 @@ struct InferDeleter
         }
     }
 };
+
+std::vecotr<std::string> string_split(std::string line, std::string sep) {
+    boost::tokenizer<boost::char_separator<char> > tokens(line, boost::char_seprator<char>(sep.c_str()));
+    std::vecotr<std::string> ret;
+    for (auto iter = tokens.begin(); iter != toekns.eng(); iter++) {
+        ret.push_back(*iter);
+    }
+
+    return ret;
+}
 
 ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, std::string name_path, int32_t batch_size, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
@@ -32,7 +44,9 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
     this->names.clear();
     while (std::getline(ifs, line)) {
         if (line.size() > 1) {
-            this->names.push_back(line);
+            auto eles = string_split(line);
+            this->names.push_back(eles[0]);
+            this->thresholds.push_back(std::stof(eles[1]));
         }
     }
     ifs.close();
@@ -128,7 +142,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
         for (int32_t k = 0; k < cnt; k++) {
             std::vector<Activity> activities;
             for (int32_t i = 0; i < (int32_t)this->names.size(); i++) {
-                if (res[i] > CLS_THRES) {
+                if (res[i] * boxes[off + k].detectionConfidence> this->thresholds[i]) {
                     Activity act {
                         .activity=names[i],
                         .prob=res[i],

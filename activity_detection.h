@@ -48,6 +48,7 @@ private:
     int32_t batch_size;
 
     std::vector<std::string> names;
+    std::map<float> thresholds;
 };
 
 #endif
