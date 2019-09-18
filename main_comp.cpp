@@ -6,6 +6,7 @@
 #include "pub.h"
 #include "people_counting.h"
 #include "activity_detection.h"
+#include "time.h"
 
 const char* PC_MODEL_PATH = "../../../model/tensorRT/yolov3_person.trt.dat";
 const int32_t PC_BATCH_SIZE = 1;
@@ -69,6 +70,7 @@ int32_t main(int32_t argc, char** argv) {
 
     int32_t frames = 0;
     while (true) {
+        clock_t beg_wall = clock();
         frames ++;
         auto img_data = src.recv();
         if (img_data.img.cols == 0 || img_data.img.rows == 0) {
@@ -83,5 +85,8 @@ int32_t main(int32_t argc, char** argv) {
         std::cerr << "[marked]" << std::endl;
 
        	pub.publish(img_data.device_id, img_data.file_name, persons); 
+        clock_t end_wall = clock();
+
+        std::cerr << "[WALL]: " << ((float)(end_wall - beg_wall) / CLOCKS_PER_SEC) << std::endl;
     }
 }
