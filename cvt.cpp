@@ -26,8 +26,8 @@ const char pc_output_blob_names[][20] = {
     "yolo_107"
 };
 
-const char* AD_CFG_PATH = "../../../model/darknet/fp16/wwdarknet53v2.cfg";
-const char* AD_WTS_PATH = "../../../model/darknet/fp16/wwdarknet53v2_50000.weights";
+const char* AD_CFG_PATH = "../../../model/darknet/wwdarknet53v2.cfg";
+const char* AD_WTS_PATH = "../../../model/darknet/wwdarknet53v2_50000.weights";
 
 const char* ad_input_blob_name = "data";
 const char* ad_output_blob_name = "softmax_78";
@@ -52,7 +52,7 @@ int32_t main(int32_t argc, char** argv) {
     nvinfer1::ICudaEngine* engine = initEngine(CFG_PATH, WTS_PATH, pc_input_blob_name, builder);
 
     IHostMemory *serializedModel = engine->serialize();
-    std::ofstream ofile("../../../model/tensorRT/yolov3_person.trt.dat", std::ios::binary);
+    std::ofstream ofile("../../../model/tensorRT/fp16/yolov3_person.trt.dat", std::ios::binary);
     
     int64_t size = serializedModel->size();
     std::cerr << "size = " << size << endl;
@@ -66,7 +66,7 @@ int32_t main(int32_t argc, char** argv) {
     engine = initEngine(AD_CFG_PATH, AD_WTS_PATH, ad_input_blob_name,  builder);
     serializedModel = engine->serialize();
 
-    std::ofstream ofile2("../../../model/tensorRT/wwdarknet53v2.trt.dat", std::ios::binary);
+    std::ofstream ofile2("../../../model/tensorRT/fp16/wwdarknet53v2.trt.dat", std::ios::binary);
     size = serializedModel->size();
     std::cerr << "size = " << size << endl;
     ofile2.write((char*)&size, sizeof(size));
