@@ -8,9 +8,9 @@
 #include "activity_detection.h"
 #include <chrono>
 
-const char* PC_MODEL_PATH = "../../../model/tensorRT/yolov3_person.trt.dat";
+const char* PC_MODEL_PATH = "../../../model/tensorRT/fp16/yolov3_person.trt.dat";
 const int32_t PC_BATCH_SIZE = 1;
-const char* AD_MODEL_PATH = "../../../model/tensorRT/wwdarknet53v2.trt.dat";
+const char* AD_MODEL_PATH = "../../../model/tensorRT/fp16/wwdarknet53v2.trt.dat";
 const char* AD_NAME_PATH = "../../../model/darknet/activity_wework.names.with_thres";
 const int32_t ACT_DET_BATCH_SIZE = 4;
 
