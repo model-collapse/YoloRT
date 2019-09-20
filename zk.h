@@ -1,7 +1,6 @@
 #ifndef _ZK_H_
 #define _ZK_H_
 
-#include <string>
 #include "cfg.h"
 
 int32_t init_zk(std::string addr);
