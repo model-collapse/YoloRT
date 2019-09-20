@@ -28,8 +28,9 @@ std::vector<std::string> string_split(std::string line, std::string sep) {
     return ret;
 }
 
-ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, std::string name_path, int32_t batch_size, nvinfer1::ILogger& logger) {
+ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, std::string name_path, int32_t batch_size, float ext_scale, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
+    this->ext_scale = ext_scale;
 
     auto builder = nvinfer1::createInferBuilder(logger);
     builder->setMaxBatchSize(MAX_BATCH_SIZE);

@@ -16,9 +16,11 @@ struct InferDeleter
     }
 };
 
-PeopleDetector::PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, nvinfer1::ILogger& logger) {
+PeopleDetector::PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, float cls_thres, float nms_thres, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
-    
+    this->nms_thres = nms_thres;
+    this->cls_thres = cls_thres;
+
     std::vector<std::string> output_blob_names = {
         "yolo_83",
         "yolo_95",
@@ -122,7 +124,7 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     };
     
     auto beg_post = std::chrono::system_clock::now();
-    bool res = NvDsInferParseYoloV3(this->layer_info, networkInfo, params, objs, kANCHORS, kMASKS);
+    bool res = NvDsInferParseYoloV3(this->layer_info, networkInfo, params, objs, kANCHORS, kMASKS, this->cls_thres, this->nms_thres);
     if (!res) {
         std::cerr << "fail to call NvDsInferParseYoloV3" << std::endl;
     }

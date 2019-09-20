@@ -42,6 +42,8 @@ extern "C" bool NvDsInferParseYoloV3(
     NvDsInferParseDetectionParams const& detectionParams,
     std::vector<NvDsInferParseObjectInfo>& objectList,
     const std::vector<float> &anchors,
-    const std::vector<std::vector<int>> &masks);
+    const std::vector<std::vector<int>> &masks,
+    float prob_thres,
+    float nms_thres);
 
 #endif

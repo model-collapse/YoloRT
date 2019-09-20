@@ -7,12 +7,17 @@
 #include "people_counting.h"
 #include "activity_detection.h"
 #include <chrono>
+#include <cfg.h>
 
-const char* PC_MODEL_PATH = "../../../model/tensorRT/fp16/yolov3_person.trt.dat";
 const int32_t PC_BATCH_SIZE = 1;
-const char* AD_MODEL_PATH = "../../../model/tensorRT/fp16/wwdarknet53v2.trt.dat";
-const char* AD_NAME_PATH = "../../../model/darknet/activity_wework.names.with_thres";
-const int32_t ACT_DET_BATCH_SIZE = 4;
+
+//const char* PC_MODEL_PATH = "../../../model/tensorRT/fp16/yolov3_person.trt.dat";
+
+//const char* AD_MODEL_PATH = "../../../model/tensorRT/fp16/wwdarknet53v2.trt.dat";
+//const char* AD_NAME_PATH = "../../../model/darknet/activity_wework.names.with_thres";
+//const int32_t ACT_DET_BATCH_SIZE = 4;
+
+const char* CONF_PATH = "cfg.ini";
 
 const int32_t MAX_TEXT_LEN = 20;
 
@@ -58,15 +63,18 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
 }
 
 int32_t main(int32_t argc, char** argv) {
+    AllConfig cfg;
+    load_config_from_file(CONF_PATH, &cfg);
+
     fprintf(stderr, "haha\n");
     fflush(stderr);
 
     // creating image source
-    ImageSourceKafka src("10.249.77.87:9092", "2" , "model_commands_2", "http://10.249.77.82:8000");
-    KafkaPublisher pub("10.249.77.87:9092", "model_results");
+    ImageSourceKafka src(cfg.kafka_in.brokers, cfg.kafka_in.group_name , cfg.kafka_in.topic_name, cfg.fs_addr);
+    KafkaPublisher pub(cfg.kafka_out.brokers, cfg.kafka_out.topic_name);
 
-    ActivityDetector ad(AD_MODEL_PATH, AD_NAME_PATH, ACT_DET_BATCH_SIZE, gLogger);
-    PeopleDetector pd(PC_MODEL_PATH, PC_BATCH_SIZE, gLogger);
+    ActivityDetector ad(cfg.act.model_file, cfg.act.name_file, cfg.act.batch_size,cfg.act.ext_scale, gLogger);
+    PeopleDetector pd(cfg.yolo.model_file, PC_BATCH_SIZE, cfg.yolo.cls_thres, cfg.yolo.nms_thres, gLogger);
 
     int32_t frames = 0;
     while (true) {

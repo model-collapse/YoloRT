@@ -28,7 +28,7 @@ public:
     static constexpr const char* input_blob_name = "data";
     std::vector<std::string> output_blob_names;
 
-    PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, nvinfer1::ILogger& logger);
+    PeopleDetector(std::string cfg_path, std::string wts_path, int32_t batch_size, float cls_thres, float nms_thres, nvinfer1::ILogger& logger);
     PeopleDetector(std::string model_path, int32_t batch_size, nvinfer1::ILogger& logger);
     ~PeopleDetector();
 
@@ -43,6 +43,8 @@ private:
 
     std::vector<NvDsInferLayerInfo> layer_info;
 
+    float nms_thres;
+    float cls_thes;
     int32_t batch_size;
 };
 

@@ -286,12 +286,11 @@ extern "C" bool NvDsInferParseYoloV3(
     NvDsInferParseDetectionParams const& detectionParams,
     std::vector<NvDsInferParseObjectInfo>& objectList,
     const std::vector<float> &anchors,
-    const std::vector<std::vector<int>> &masks)
+    const std::vector<std::vector<int>> &masks,
+    float prob_thres,
+    float nms_thres)
 {
     const uint kNUM_BBOXES = 3;
-    static const float kNMS_THRESH = 0.45f;
-    static const float kPROB_THRESH = 0.15f;
-
     const std::vector<const NvDsInferLayerInfo*> sortedLayers =
         SortLayers (outputLayersInfo);
 
@@ -318,13 +317,13 @@ extern "C" bool NvDsInferParseYoloV3(
 
         std::vector<NvDsInferParseObjectInfo> outObjs =
             decodeYoloV3Tensor((const float*)(layer.buffer), masks[idx], anchors, gridSize, stride, kNUM_BBOXES,
-                       NUM_CLASSES_YOLO, kPROB_THRESH, networkInfo.width, networkInfo.height);
+                       NUM_CLASSES_YOLO, prob_thres, networkInfo.width, networkInfo.height);
         objects.insert(objects.end(), outObjs.begin(), outObjs.end());
     }
 
     std::cerr << "[before nms] #obj = " << objects.size() << std::endl;
     objectList.clear();
-    objectList = nmsAllClasses(kNMS_THRESH, objects, NUM_CLASSES_YOLO);
+    objectList = nmsAllClasses(nms_thres, objects, NUM_CLASSES_YOLO);
 
     return true;
 }
@@ -337,6 +336,8 @@ extern "C" bool NvDsInferParseCustomYoloV3(
     NvDsInferParseDetectionParams const& detectionParams,
     std::vector<NvDsInferParseObjectInfo>& objectList)
 {
+    static const float kNMS_THRESH = 0.45f;
+    static const float kPROB_THRESH = 0.15f;
     static const std::vector<float> kANCHORS = {
         10.0, 13.0, 16.0,  30.0,  33.0, 23.0,  30.0,  61.0,  62.0,
         45.0, 59.0, 119.0, 116.0, 90.0, 156.0, 198.0, 373.0, 326.0};
@@ -346,7 +347,7 @@ extern "C" bool NvDsInferParseCustomYoloV3(
         {0, 1, 2}};
     return NvDsInferParseYoloV3 (
         outputLayersInfo, networkInfo, detectionParams, objectList,
-        kANCHORS, kMASKS);
+        kANCHORS, kMASKS, kPROB_THRESH, kNMS_THRESH);
 }
 
 extern "C" bool NvDsInferParseCustomYoloV3Tiny(
@@ -364,7 +365,7 @@ extern "C" bool NvDsInferParseCustomYoloV3Tiny(
 
     return NvDsInferParseYoloV3 (
         outputLayersInfo, networkInfo, detectionParams, objectList,
-        kANCHORS, kMASKS);
+        kANCHORS, kMASKS, kPROB_THRESH, kNMS_THRESH);
 }
 
 static bool NvDsInferParseYoloV2(

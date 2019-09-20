@@ -28,10 +28,8 @@ public:
     static constexpr const char* output_blob_name = "softmax_78";
 
     static const int32_t MAX_BATCH_SIZE = 4;
-    static constexpr const float EXT_SCALE = 0.4;
 
-
-    ActivityDetector(std::string cfg_path, std::string wts_path, std::string names_path, int32_t batch_size, nvinfer1::ILogger& logger);
+    ActivityDetector(std::string cfg_path, std::string wts_path, std::string names_path, int32_t batch_size, float ext_scale, nvinfer1::ILogger& logger);
     ActivityDetector(std::string model_path, std::string names_path, int32_t batch_size, nvinfer1::ILogger& logger);
     ~ActivityDetector();
 
@@ -46,6 +44,7 @@ private:
     UnifiedBufManager* buffers;
 
     int32_t batch_size;
+    float ext_scale;
 
     std::vector<std::string> names;
     std::vector<float> thresholds;
