@@ -1,6 +1,5 @@
 #ifndef _CFG_H_
 #define _CFG_H_
-#include <zk/client.hpp>
 
 struct KafkaCFG {
     std::string brokers;
