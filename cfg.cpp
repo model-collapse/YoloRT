@@ -1,6 +1,7 @@
 #include "cfg.h"
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <fstream>
 
 int32_t load_config_from_file(std::string path, AllConfig* cfg) {
     namespace po = boost::program_options;
