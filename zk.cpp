@@ -1,6 +1,7 @@
 #include "zk.h"
 #include <zookeeper.h>
 #include <iostream>
+#include <stringstream>
 #include <vector>
 #include <rapidjson/document.h>
 
@@ -41,7 +42,7 @@ int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
         }
 
         rapidjson::Document d;
-        d.Parse(json_data);
+        d.Parse(json_data.c_str());
         std::string host_path = d["host"].GetString();
         int32_t port = d["port"].GetInt();
 
