@@ -42,8 +42,10 @@ PeopleDetector::PeopleDetector(std::string cfg_path, std::string wts_path, int32
 
 }
 
-PeopleDetector::PeopleDetector(std::string model_path, int32_t batch_size, nvinfer1::ILogger& logger) {
+PeopleDetector::PeopleDetector(std::string model_path, int32_t batch_size, float cls_thres, float nms_thres, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
+    this->nms_thres = nms_thres;
+    this->cls_thres = cls_thres;
     
     std::vector<std::string> output_blob_names = {
         "yolo_83",
