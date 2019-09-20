@@ -7,7 +7,7 @@
 #include "people_counting.h"
 #include "activity_detection.h"
 #include <chrono>
-#include <cfg.h>
+#include "cfg.h"
 
 const int32_t PC_BATCH_SIZE = 1;
 
