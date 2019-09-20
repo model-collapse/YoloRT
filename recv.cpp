@@ -85,7 +85,7 @@ cv::Mat ImageSource::recv() {
     return cv::imdecode(raw_data, cv::IMREAD_COLOR);
 }
 
-ImageSourceKafka::ImageSourceKafka(std::string* broker_addr, std::string group_name, std::string topic_name, std::string fs_prefix) {
+ImageSourceKafka::ImageSourceKafka(std::string broker_addr, std::string group_name, std::string topic_name, std::string fs_prefix) {
     cppkafka::Configuration config = {
         { "metadata.broker.list", std::string(broker_addr) },
         { "group.id", group_name },
