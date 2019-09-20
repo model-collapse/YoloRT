@@ -7,6 +7,7 @@ int32_t load_config_from_file(std::string path, AllConfig* cfg) {
     namespace po = boost::program_options;
     po::options_description opt("WW");
     opt.add_options()("zookeeper.addr", po::value(&cfg->zk_addr), "Address of zookeeper");
+    opt.add_options()("zookeeper.kafka_path", po::value(&cfg->zk_kafka_path), "Kafka config path in zookeeper");
     opt.add_options()("file_server.addr", po::value(&cfg->fs_addr), "Address of file_server");
     opt.add_options()("YoloCFG.model_file", po::value(&cfg->yolo.model_file), "path to yolo model file");
     opt.add_options()("YoloCFG.class_thres", po::value(&cfg->yolo.cls_thres), "threshold of class prob");
