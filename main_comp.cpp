@@ -77,6 +77,7 @@ int32_t main(int32_t argc, char** argv) {
     AllConfig cfg;
     load_config_from_file(CONF_PATH, &cfg);
     init_zk_with_cfg_or_env(&cfg);
+    update_kafka_settings(cfg.zk_kafka_path, &cfg);
 
     fprintf(stderr, "ZK initialized\n");
     fflush(stderr);

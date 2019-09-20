@@ -1,4 +1,7 @@
 #include "zk.h"
+#ifdef THREADED
+#warning threaded is defined
+#endif
 #include <zookeeper.h>
 #include <iostream>
 #include <vector>
@@ -51,8 +54,8 @@ int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
     std::string brokers = brokers_s.str();
     brokers = brokers.substr(0, brokers_s.size() - 1);
 
-    cfg.kafka_in.brokers = brokers;
-    cfg.kafka_out.brokers = brokers;
+    cfg->kafka_in.brokers = brokers;
+    cfg->kafka_out.brokers = brokers;
     std::cerr << "brokers = " << brokers << std::endl;
 
     return 0;
