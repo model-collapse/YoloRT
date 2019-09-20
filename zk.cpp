@@ -1,9 +1,4 @@
 #include "zk.h"
-#ifdef THREADED
-#warning threaded is defined
-#else
-#warning threaded is NOT defined
-#endif
 #include <zookeeper.h>
 #include <iostream>
 #include <vector>
