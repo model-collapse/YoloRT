@@ -15,11 +15,11 @@ int32_t load_config_from_file(std::string path, AllConfig* cfg) {
     opt.add_options()("ActCFG.name_file", po::value(&cfg->act.name_file), "path to action detection name file");
     opt.add_options()("ActCFG.batch_size", po::value(&cfg->act.batch_size), "action detection batch size");
     opt.add_options()("ActCFG.ext_scale", po::value(&cfg->act.ext_scale), "action detection bouding box extension scale");
-    opt.add_options()("kafaka_in.brokers", po::value(&cfg->kafka_in.brokers), "broker list for kafka");
-    opt.add_options()("kafaka_in.topic_name", po::value(&cfg->kafka_in.topic_name), "incomming topic name for kafka");
-    opt.add_options()("kafaka_in.group_name", po::value(&cfg->kafka_in.group_name), "incomming group name for kafka");
-    opt.add_options()("kafaka_out.brokers", po::value(&cfg->kafka_out.brokers), "broker list for kafka");
-    opt.add_options()("kafaka_out.topic_name", po::value(&cfg->kafka_out.topic_name), "outputting topic name for kafka");
+    opt.add_options()("kafka_in.brokers", po::value(&cfg->kafka_in.brokers), "broker list for kafka");
+    opt.add_options()("kafka_in.topic_name", po::value(&cfg->kafka_in.topic_name), "incomming topic name for kafka");
+    opt.add_options()("kafka_in.group_name", po::value(&cfg->kafka_in.group_name), "incomming group name for kafka");
+    opt.add_options()("kafka_out.brokers", po::value(&cfg->kafka_out.brokers), "broker list for kafka");
+    opt.add_options()("kafka_out.topic_name", po::value(&cfg->kafka_out.topic_name), "outputting topic name for kafka");
 
     std::ifstream config_stream(path.c_str());
     po::variables_map vm;
