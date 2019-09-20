@@ -27,7 +27,9 @@ std::string zk_get(std::string path) {
 int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
     String_vector children;
     std::vector<std::string> vc;
+    std::cerr << "For path " << zk_kafka_path << std::endl;
     zoo_get_children(zhdl, zk_kafka_path.c_str(), 0, &children);
+    std::cerr << "#children = " << children.count << std::endl;
     for (int32_t i = 0; i < children.count; i++) {
         std::string s = children.data[i];
         vc.push_back(s);
