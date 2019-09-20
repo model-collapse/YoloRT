@@ -5,7 +5,7 @@
 #include <rapidjson/document.h>
 
 zhandle_t* zhdl;
-const int32_t MAX_BUF_LEN 20000;
+const int32_t MAX_BUF_LEN = 20000;
 
 void watch(zhandle_t *zh, int type, int state, const char *path,void *watcherCtx) {
     std::cerr << "notified" << std::endl;
@@ -23,7 +23,7 @@ std::string zk_get(std::string path) {
     return std::string(buf, (size_t)len);
 }
 
-int32_t update_kafka_settings(std::string zk_kafka_path, cfg *AllConfig) {
+int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
     String_vector children;
     std::vector<std::string> vc;
     zoo_get_children(zhdl, zk_kafka_path.c_str(), 0, &children);
