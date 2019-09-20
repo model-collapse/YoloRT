@@ -39,6 +39,7 @@ int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
     std::stringstream brokers_s;
     for (std::vector<std::string>::iterator iter = vc.begin(); iter < vc.end(); iter++) {
         std::string json_data = zk_get(*iter);
+        std::cerr << "get: " << *iter << "result: " << json_data << std::endl;
         if (json_data.size() == 0) {
             std::cerr << "len(data) is 0 for path " << *iter << std::endl;
         }
