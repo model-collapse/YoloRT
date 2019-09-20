@@ -1,0 +1,11 @@
+#ifndef _ZK_H_
+#define _ZK_H_
+
+#include <string>
+#include "cfg.h"
+
+int32_t init_zk(std::string addr);
+std::string zk_get(std::string path);
+int32_t update_kafka_settings(cfg *AllConfig);
+
+#endif

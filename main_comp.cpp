@@ -8,6 +8,7 @@
 #include "activity_detection.h"
 #include <chrono>
 #include "cfg.h"
+#include "zk.h"
 
 const int32_t PC_BATCH_SIZE = 1;
 
@@ -18,6 +19,7 @@ const int32_t PC_BATCH_SIZE = 1;
 //const int32_t ACT_DET_BATCH_SIZE = 4;
 
 const char* CONF_PATH = "cfg.ini";
+const char* ZK_PATH_ENV_NAME = "ZOOKEEPER_PATH";
 
 const int32_t MAX_TEXT_LEN = 20;
 
@@ -62,11 +64,21 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
     cv::putText(canvas, text, cv::Point(text_left + margin, text_top + text_height - margin - anchor), font, font_scale, txt_color, thickness);
 }
 
+int32_t init_zk_with_cfg_or_env(AllConfig* cfg) {
+    std::string zk_path = std:getenv(ZK_PATH_ENV_NAME);
+    if (zk_path.size() == 0) {
+        zk_path = cfg.zk_addr;
+    }
+
+    return init_zk(zk_path);
+}
+
 int32_t main(int32_t argc, char** argv) {
     AllConfig cfg;
     load_config_from_file(CONF_PATH, &cfg);
+    init_zk_with_cfg_or_env(&cfg);
 
-    fprintf(stderr, "haha\n");
+    fprintf(stderr, "ZK initialized\n");
     fflush(stderr);
 
     // creating image source

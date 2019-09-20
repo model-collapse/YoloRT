@@ -24,6 +24,7 @@ struct ActCFG {
 
 struct AllConfig {
     std::string zk_addr;
+    std::string zk_kafka_path;
     std::string fs_addr;
     YoloCFG yolo;
     ActCFG act;
