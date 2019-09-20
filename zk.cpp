@@ -1,7 +1,7 @@
 #include "zk.h"
 #include <zookeeper.h>
 #include <iostream>
-#include <stringstream>
+#include <sstream>
 #include <vector>
 #include <rapidjson/document.h>
 
