@@ -21,6 +21,7 @@ std::string zk_get(std::string path) {
     char buf[MAX_BUF_LEN];
     int32_t len;
     zoo_get(zhdl, path.c_str(), 0, buf, &len, 0);
+    std::cerr << "len = " << std::endl;
     return std::string(buf, (size_t)len);
 }
 
