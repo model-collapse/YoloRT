@@ -85,7 +85,7 @@ cv::Mat ImageSource::recv() {
     return cv::imdecode(raw_data, cv::IMREAD_COLOR);
 }
 
-ImageSourceKafka::ImageSourceKafka(const char* broker_addr, const char* group_name, const char* topic_name, const char* fs_prefix) {
+ImageSourceKafka::ImageSourceKafka(std::string* broker_addr, std::string group_name, std::string topic_name, std::string fs_prefix) {
     cppkafka::Configuration config = {
         { "metadata.broker.list", std::string(broker_addr) },
         { "group.id", group_name },
@@ -127,8 +127,8 @@ ImageData ImageSourceKafka::recv() {
     auto end_poll = std::chrono::system_clock::now();
     std::cerr << "here" << std::endl;
     auto msecs = [](std::chrono::system_clock::time_point beg, std::chrono::system_clock::time_point end) -> int {
-            return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
-        };
+        return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
+    };
 
     if (msg) {
         if (msg.get_error()) {
