@@ -50,7 +50,7 @@ int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
     }
 
     std::string brokers = brokers_s.str();
-    brokers = brokers.substr(0, brokers_s.length() - 1);
+    brokers = brokers.substr(0, brokers.length() - 1);
 
     cfg->kafka_in.brokers = brokers;
     cfg->kafka_out.brokers = brokers;
