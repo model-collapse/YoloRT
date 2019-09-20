@@ -65,9 +65,12 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
 }
 
 int32_t init_zk_with_cfg_or_env(AllConfig* cfg) {
-    std::string zk_path = std::getenv(ZK_PATH_ENV_NAME);
-    if (zk_path.size() == 0) {
+    const char* zk_path_env = std::getenv(ZK_PATH_ENV_NAME);
+    std::string zk_path;
+    if (zk_path_env == NULL) {
         zk_path = cfg->zk_addr;
+    } else {
+        zk_path = zk_path_env;
     }
 
     return init_zk(zk_path);
