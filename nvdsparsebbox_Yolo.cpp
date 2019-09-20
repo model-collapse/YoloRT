@@ -356,6 +356,8 @@ extern "C" bool NvDsInferParseCustomYoloV3Tiny(
     NvDsInferParseDetectionParams const& detectionParams,
     std::vector<NvDsInferParseObjectInfo>& objectList)
 {
+    static const float kNMS_THRESH = 0.45f;
+    static const float kPROB_THRESH = 0.15f;
     static const std::vector<float> kANCHORS = {
         10, 14, 23, 27, 37, 58, 81, 82, 135, 169, 344, 319};
     static const std::vector<std::vector<int>> kMASKS = {
