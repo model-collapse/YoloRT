@@ -1,6 +1,8 @@
 #ifndef _CFG_H_
 #define _CFG_H_
 
+#include <string>
+
 struct KafkaCFG {
     std::string brokers;
     std::string topic_name;
