@@ -46,7 +46,7 @@ int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
         std::string host_path = d["host"].GetString();
         int32_t port = d["port"].GetInt();
 
-        brokers_s << host_path << ":" << port << ","
+        brokers_s << host_path << ":" << port << ",";
     }
 
     std::string brokers = brokers_s.str();
