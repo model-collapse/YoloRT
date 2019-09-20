@@ -32,7 +32,7 @@ int32_t update_kafka_settings(std::string zk_kafka_path, AllConfig* cfg) {
         std::string s = children.data[i];
         vc.push_back(s);
     }
-    deallocate_String_vector(&children);
+    //deallocate_String_vector(&children);
 
     std::stringstream brokers_s;
     for (std::vector<std::string>::iterator iter = vc.begin(); iter < vc.end(); iter++) {
