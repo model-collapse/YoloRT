@@ -56,8 +56,9 @@ ActivityDetector::ActivityDetector(std::string cfg_path, std::string wts_path, s
     std::cerr << "#classes = " << this->names.size() << std::endl;
 }
 
-ActivityDetector::ActivityDetector(std::string model_path, std::string name_path, int32_t batch_size, nvinfer1::ILogger& logger) {
+ActivityDetector::ActivityDetector(std::string model_path, std::string name_path, int32_t batch_size, float ext_scale, nvinfer1::ILogger& logger) {
     this->batch_size = batch_size;
+    this->ext_scale = ext_scale;
 
     IRuntime* runtime = createInferRuntime(gLogger);
     int64_t length;
