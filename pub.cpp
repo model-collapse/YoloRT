@@ -4,7 +4,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <chrono>
 
-KafkaPublisher::KafkaPublisher(const char* address, const char* topic_name) {
+KafkaPublisher::KafkaPublisher(std::string address, std::string topic_name) {
     cppkafka::Configuration config = {
         { "metadata.broker.list", address }
     };
