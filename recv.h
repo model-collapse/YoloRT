@@ -29,7 +29,7 @@ private:
 
 class ImageSourceKafka {
 public:
-    ImageSourceKafka(const char* broker_addr, const char* group_name, const char* topic_name, const char* fs_prefix);
+    ImageSourceKafka(std::string brokers, std::string group_name, std::string topic_name, std::string fs_prefix);
     ~ImageSourceKafka();
     ImageData recv();
 
