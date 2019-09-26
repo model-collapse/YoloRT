@@ -20,6 +20,7 @@
 # DEALINGS IN THE SOFTWARE.
 ################################################################################
 
+AR:=ar
 CC:= g++
 NVCC:=/usr/local/cuda/bin/nvcc
 
@@ -41,11 +42,13 @@ BASE_SRCFILES:= recv.cpp \
 		   pub.cpp 				\
 		   cfg.cpp				\
 		   zk.cpp 				\
+		   api.cpp				\
            kernels.cu       
 TARGET_EXEC:= yolo_detection
 CVT_EXEC:= convert_to_trt
 TRY_EXEC:= trt_plugin_try
 OLD_EXEC:=old_yolo_detection
+TARGET_LIB:= libyolo_detection.a
 
 TARGET_OBJS:= $(BASE_SRCFILES:.cpp=.o)
 TARGET_OBJS:= $(TARGET_OBJS:.cu=.o)
@@ -68,9 +71,10 @@ $(CVT_EXEC) : $(TARGET_OBJS) cvt.o
 	$(CC) -o $@  cvt.o $(TARGET_OBJS) $(LFLAGS)
 
 $(TRY_EXEC) : plugin_try.o
-	$(CC) -o $@  plugin_try.o $(LFLAGS)
+	$(CC) -o $@ plugin_try.o $(LFLAGS)
 
-
+$(TARGET_LIB) : $(TARGET_OBJS)
+    $(AR) -o $@ $(TARGET_OBJS) $(LFLAGS)
 
 clean:
 	rm -rf $(TARGET_EXEC)
