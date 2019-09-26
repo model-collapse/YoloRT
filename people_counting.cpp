@@ -157,6 +157,23 @@ std::vector<NvDsInferParseObjectInfo> PeopleDetector::detect(cv::Mat img) {
     return calib_objs;
 }
 
+int32_t PeopleDetector::detect_capi(cv::Mat img, NvDsInferParseObjectInfo* boxes, int32_t& num) {
+    auto res = this->detect(img);
+    if (0 == num) {
+        std::cerr << "param num is 0, cannot write any result to box buf" << std::endl;
+    }
+
+    if (num > res.size()) {
+        num = res.size();
+    }
+
+    for (int32_t i = 0; i < num; i++) {
+        boxes[i] = res[i];
+    }
+
+    return 0;
+}
+
 PeopleDetector::~PeopleDetector() {
 
 }

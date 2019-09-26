@@ -33,6 +33,7 @@ public:
     ~PeopleDetector();
 
     std::vector<NvDsInferParseObjectInfo> detect(cv::Mat img);
+    int32_t detect_capi(cv::Mat img, NvDsInferParseObjectInfo* boxes, int32_t& num);
 private:
     nvinfer1::ICudaEngine* init_engine(std::string cfg_path, std::string weight_path, nvinfer1::IBuilder* builder);
     
