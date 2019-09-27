@@ -1,7 +1,7 @@
 #ifndef _API_H_
 #define _API_H_
-#define MAX_OBJ_CNT 100
-#define NUM_ACTIVITIES 10
+
+#include "def.h"
 #include <inttypes.h>
 #include "nvdsinfer.h"
 

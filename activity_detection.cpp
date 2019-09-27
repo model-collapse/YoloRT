@@ -186,7 +186,7 @@ std::vector<LabeledPeople> ActivityDetector::detect(cv::Mat img, std::vector<NvD
     return ret;
 }
 
-int32_t ActivityDetector::detect_capi(cv::Mat img, NvDsInferParseObjectInfo* boxes, int32_t num, ppstr_t res[][]) {
+int32_t ActivityDetector::detect_capi(cv::Mat img, NvDsInferParseObjectInfo* boxes, int32_t num, const char* res[][MAX_OBJ_CNT]) {
     std::vector<NvDsInferParseObjectInfo> vboxes(boxes, boxes+num);
     auto lst = this->detect(img, vboxes);
     
