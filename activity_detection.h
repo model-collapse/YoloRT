@@ -35,7 +35,7 @@ public:
     ~ActivityDetector();
 
     std::vector<LabeledPeople> detect(cv::Mat img, std::vector<NvDsInferParseObjectInfo> boxes);
-    int32_t detect_capi(cv::Mat img, NvDsInferParseObjectInfo* boxes, int32_t num, const char* res[][MAX_OBJ_CNT]);
+    int32_t detect_capi(cv::Mat img, NvDsInferParseObjectInfo* boxes, int32_t num, const char* res[][NUM_ACTIVITIES]);
 private:
     nvinfer1::ICudaEngine* init_engine(std::string cfg_path, std::string weight_path, nvinfer1::IBuilder* builder);
     cv::Mat get_patch(cv::Mat img, NvDsInferParseObjectInfo box);

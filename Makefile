@@ -48,7 +48,7 @@ TARGET_EXEC:= yolo_detection
 CVT_EXEC:= convert_to_trt
 TRY_EXEC:= trt_plugin_try
 OLD_EXEC:=old_yolo_detection
-TARGET_LIB:= libyolo_detection.a
+TARGET_LIB:= libyolo_detection.so
 
 TARGET_OBJS:= $(BASE_SRCFILES:.cpp=.o)
 TARGET_OBJS:= $(TARGET_OBJS:.cu=.o)
@@ -74,7 +74,7 @@ $(TRY_EXEC) : plugin_try.o
 	$(CC) -o $@ plugin_try.o $(LFLAGS)
 
 $(TARGET_LIB) : $(TARGET_OBJS)
-	$(AR) -o $@ $(TARGET_OBJS) $(LFLAGS)
+	$(CC) -shared -o $@ $(TARGET_OBJS) $(LFLAGS)
 
 clean:
 	rm -rf $(TARGET_EXEC)
