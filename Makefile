@@ -74,7 +74,7 @@ $(TRY_EXEC) : plugin_try.o
 	$(CC) -o $@ plugin_try.o $(LFLAGS)
 
 $(TARGET_LIB) : $(TARGET_OBJS)
-    $(AR) -o $@ $(TARGET_OBJS) $(LFLAGS)
+	$(AR) -o $@ $(TARGET_OBJS) $(LFLAGS)
 
 clean:
 	rm -rf $(TARGET_EXEC)

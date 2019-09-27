@@ -2,12 +2,13 @@
 #define _API_H_
 #define MAX_OBJ_CNT 100
 #define NUM_ACTIVITIES 10
-
+#include <inttypes.h>
 #include "nvdsinfer.h"
 
-typedef hd_activity_detector_t void*;
-typedef hd_people_detector_t void*;
-typedef cv_mat_ptr_t void*;
+typedef void* hd_activity_detector_t;
+typedef void* hd_people_detector_t;
+typedef void* cv_mat_ptr_t;
+typedef const char* pstr_t;
 
 struct activity_detector_config_t {
     char* model_path;
@@ -27,7 +28,7 @@ struct context_t {
     cv_mat_ptr_t img;
     NvDsInferObjectDetectionInfo boxes[MAX_OBJ_CNT];
     int32_t num_boxes;
-    const char* activities[MAX_OBJ_CNT][NUM_ACTIVITIES];
+    pstr_t activities[MAX_OBJ_CNT][NUM_ACTIVITIES];
 };
 
 #ifdef __cplusplus
