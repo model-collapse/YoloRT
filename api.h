@@ -35,20 +35,20 @@ struct context_t {
 extern "C"{
 #endif
 
-context_t* new_context();
+struct context_t* new_context();
 
-int32_t free_ctx(context_t* c);
-int32_t free_adc(activity_detector_config_t c);
-int32_t free_pdc(people_detector_config_t c);
+int32_t free_ctx(struct context_t* c);
+int32_t free_adc(struct activity_detector_config_t c);
+int32_t free_pdc(struct people_detector_config_t c);
 
-hd_activity_detector_t new_activity_detector(activity_detector_config_t c);
-hd_people_detector_t new_people_detector(activity_detector_config_t c);
+hd_activity_detector_t new_activity_detector(struct activity_detector_config_t c);
+hd_people_detector_t new_people_detector(struct activity_detector_config_t c);
 
 int32_t free_ad(hd_activity_detector_t d);
 int32_t free_pd(hd_people_detector_t d);
 
-int32_t infer_ad(hd_activity_detector_t ad, context_t* c);
-int32_t infer_pd(hd_people_detector_t ad, context_t* c);
+int32_t infer_ad(hd_activity_detector_t ad, struct context_t* c);
+int32_t infer_pd(hd_people_detector_t ad, struct context_t* c);
 
 cv_mat_ptr_t imdecode(void* buf, int32_t size);
 int32_t free_cvmat(cv_mat_ptr_t a);
