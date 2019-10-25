@@ -42,7 +42,7 @@ int32_t free_adc(activity_detector_config_t c);
 int32_t free_pdc(people_detector_config_t c);
 
 hd_activity_detector_t new_activity_detector(activity_detector_config_t c);
-hd_people_detector_t new_people_detector(activity_detector_config_t c);
+hd_people_detector_t new_people_detector(people_detector_config_t c);
 
 int32_t free_ad(hd_activity_detector_t d);
 int32_t free_pd(hd_people_detector_t d);
