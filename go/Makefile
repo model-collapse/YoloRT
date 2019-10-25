@@ -11,4 +11,4 @@ yolo_detection:
 	export CGO_CFLAGS=$(CFLAGS)
 	export CGO_LDFLAGS=$(LFKAGS)
 	$(GO) env
-    $(GO) build -o yolo_detection
+	$(GO) build -o yolo_detection
