@@ -1,0 +1,33 @@
+{
+    "zookeeper": {
+        "addr": "10.249.77.87:2181",
+        "kafka_path": "/brokers/ids"
+    },
+    "yolo": {
+        "model_file": "model/fp16/yolov3_person.trt.dat",
+        "class_thres": 0.15,
+        "nms_thres": 0.45
+    },
+    "act": {
+        "model_file": "model/fp16/wwdarknet53v2.trt.dat",
+        "name_file": "model/fp16/activity_wework.names.with_thres",
+        "batch_size": 4,
+        "ext_scale": 0.4
+    },
+    "kafka_sub": {
+        "brokers": ["10.249.77.87:9092"],
+        "topic_name": "model_commands_2",
+        "group_name": 2,
+        "offset_mode": "last",
+        "timeout": 1000
+    },
+    "kafka_pub": {
+        "brokers": ["10.249.77.87:9092"],
+        "topic_name": "model_results",
+        "timeout": 1000
+    },
+    "file_server": {
+        "addr": "http://10.249.77.82:8000"
+    },
+    "buf_size": 10
+}
