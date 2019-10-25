@@ -4,6 +4,9 @@ package main
 import "C"
 
 import (
+	"io/ioutil"
+	"net/http"
+	"encoding/json"
 	"log"
 	"strings"
 	"unsafe"
@@ -69,7 +72,7 @@ func NewImageSource(brokers []string, offMode int, topicName, groupName string, 
 	}
 }
 
-func (s *ImageSource) Recv() unsfae.Pointer {
+func (s *ImageSource) Recv() Image {
 	if s.OffsetMode == Lastest {
 		for i := range s.partitions {
 			s.partitions[i].Offset = kafka.OffsetEnd
@@ -81,10 +84,35 @@ func (s *ImageSource) Recv() unsfae.Pointer {
 	msg, err := s.consumer.ReadMessage(s.Timeout)
 	if err != nil {
 		log.Printf("error in receiving message, %v", err)
-		return
+		return Image {
+			Err: err,
+		}
 	}
 
-	data := msg.Value
+	cmd := struct {
+		DeviceName string `json: "device_id"`
+		FileName   string `json: "file_name"`
+	}{}
+
+	if err := json.Unmarshal(msg, &cmd); err != nil {
+		log.Printf("Error format of message, %v", err))
+		return Image {
+			Err: err,
+		}
+	}
+
+	url := fmt.Sprintf("%s/%s/%s", GCfg.FileServer.Addr, cmd,.DeviceName, cmd.FileName)
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Printf("Error in getting image from %s", url)
+		return Image {
+			Err: err,
+		}
+	}
+
+	defer resp.Body.Close()
+	data, _ := ioutil.ReadAll(resp.Body)
+
 	size := len(data)
 	ret := C.imdecode(data, size)
 
@@ -92,7 +120,11 @@ func (s *ImageSource) Recv() unsfae.Pointer {
 		s.consumer.CommitMessage(&msg)
 	}
 
-	return unsafe.Pointer(ret)
+	return Image {
+		DeviceName: cmd.DeviceName,
+		FileName: cmd.FileName,
+		Image: unsafe.Pointer(ret)
+	}
 }
 
 func (s *ImageSource) Close() {
