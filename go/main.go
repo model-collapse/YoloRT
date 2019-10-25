@@ -26,8 +26,8 @@ func main() {
 	pCfg := C.people_detector_config_t{
 		model_path: C.CString(GCfg.Yolo.ModelFile),
 		batch_size: 1,
-		cls_thres:  GCfg.Yolo.ClassThreshold,
-		nms_thres:  GCfg.Yolo.NMSThreshold,
+		cls_thres:  C.float(GCfg.Yolo.ClassThreshold),
+		nms_thres:  C.float(GCfg.Yolo.NMSThreshold),
 	}
 	peopleDetector := C.new_people_detector(pCfg)
 	defer C.free_pd(peopleDetector)
@@ -35,8 +35,8 @@ func main() {
 	aCfg := C.activity_detector_config_t{
 		model_path: C.CString(GCfg.Act.ModelFile),
 		names_path: C.CString(GCfg.Act.NameFile),
-		batch_size: GCfg.Act.BatchSize,
-		ext_size:   GCfg.Act.ExtSize,
+		batch_size: C.int32_t(GCfg.Act.BatchSize),
+		ext_scale:   C.float(GCfg.Act.ExtScale),
 	}
 	activityDetector := C.new_activity_detector(aCfg)
 	defer C.free_ad(activityDetector)
@@ -51,7 +51,7 @@ func main() {
 	defer pub.Close()
 
 	imgChan := make(chan unsafe.Pointer, GCfg.BufSize)
-	resChan := make(LabeledPerson, GCfg.BufSize)
+	resChan := make(chan []LabeledPerson, GCfg.BufSize)
 
 	var wg1 sync.WaitGroup
 	var wg2 sync.WaitGroup
@@ -69,7 +69,7 @@ func main() {
 	wg3.Add(1)
 	go func() {
 		defer wg3.Done()
-		for lbl := range resChan {
+		for lbls := range resChan {
 			data, _ := json.Marshal(lbl)
 			pub.PublishBytes(data)
 		}
@@ -95,7 +95,7 @@ func main() {
 		}
 	}()
 
-	chanTerm := make(os.Signal)
+	chanTerm := make(chan os.Signal)
 	signal.Notify(chanTerm, syscall.SIGTERM)
 
 	<-chanTerm

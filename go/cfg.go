@@ -21,7 +21,7 @@ type ActCfg struct {
 	ModelFile string `json:"model_file"`
 	NameFile  string `json:"name_file"`
 	BatchSize int32  `json:"batch_size"`
-	ExtSize   int32  `json:"ext_size"`
+	ExtScale   float32  `json:"ext_scale"`
 }
 
 type KafkaCfg struct {

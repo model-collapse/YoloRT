@@ -20,12 +20,12 @@ type ZKAgent struct {
 func NewZKAgent(servers []string, timeout int, kafkaZKPath string) ZKAgent {
 	conn, evt, err := zk.Connect(servers, time.Duration(timeout)*time.Millisecond)
 	if err != nil {
-		log.Fatalf(“Fail to connect to ZK server”)
+		log.Fatalf("Fail to connect to ZK server")
 	}
 
 	go func() {
 		for evt := range evt {
-			log.Printf("[ERR ZK] %v", evt.Err())
+			log.Printf("[ERR ZK] %v", evt.Err)
 		}
 	} ()
 
