@@ -8,7 +8,5 @@ LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 all: yolo_detection
 
 yolo_detection:
-	export CGO_CFLAGS="$(CFLAGS)"
-	export CGO_LDFLAGS="$(LFKAGS)"
-	$(GO) env
-	$(GO) build -o yolo_detection
+	CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) env
+	CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) build -o yolo_detection
