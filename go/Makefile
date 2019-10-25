@@ -8,5 +8,5 @@ LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 all: yolo_detection
 
 yolo_detection:
-	CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) env
-	CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) build -o yolo_detection
+	GOPROXY="goproxy.io" GOPATH="$(HOME)/gpath" CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) env
+	GOPROXY="goproxy.io" GOPATH="$(HOME)/gpath" CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) build -o yolo_detection
