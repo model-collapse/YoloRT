@@ -5,11 +5,10 @@ CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/
 LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda/lib64 -lcudart -lcublas -L_3rdparty/lib -lhashtable -lzookeeper -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -L/usr/lib/aarch64-linux-gnu -lcppkafka -lrestclient-cpp -lcurl -lboost_program_options -lzmq -lstdc++fs -lpthread -L../ -lyolo_detection
 LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 
-CGO_CFLAGS=$(CFLAGS)
-CGO_LDFLAGS=$(LFKAGS)
-
 all: yolo_detection
 
 yolo_detection:
+	export CGO_CFLAGS=$(CFLAGS)
+	export CGO_LDFLAGS=$(LFKAGS)
 	$(GO) env
     $(GO) build -o yolo_detection
