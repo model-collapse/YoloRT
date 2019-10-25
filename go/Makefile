@@ -12,4 +12,3 @@ all: yolo_detection
 yolo_detection:
 	GOPROXY="goproxy.io" GOPATH="$(HOME)/gpath" CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) env
 	GOPROXY="goproxy.io" GOPATH="$(HOME)/gpath" CGO_CFLAGS="$(CFLAGS)" CGO_LDFLAGS="$(LFLAGS)" $(GO) build -o yolo_detection
-∂
