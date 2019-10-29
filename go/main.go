@@ -21,20 +21,22 @@ const (
 type Image struct {
 	DeviceName string
 	FileName   string
-	Err error
+	Err        error
 	Image      unsafe.Pointer
 }
 
 type PublishResult struct {
-	DeviceName string `json: "device_id"`
-	FileName   string `json: "file_name"`
-	Boxes []LabeledPerson `json:"boxes"`
+	DeviceName string          `json: "device_id"`
+	FileName   string          `json: "file_name"`
+	Boxes      []LabeledPerson `json: "boxes"`
 }
 
 func main() {
 	if err := LoadConfigure(CFGPath); err != nil {
 		log.Fatalf("Fail to load configure, %v", err)
 	}
+
+	log.Printf("Configure loaded")
 
 	pCfg := C.people_detector_config_t{
 		model_path: C.CString(GCfg.Yolo.ModelFile),
@@ -54,6 +56,8 @@ func main() {
 	activityDetector := C.new_activity_detector(aCfg)
 	defer C.free_ad(activityDetector)
 
+	log.Printf("Detector initialized!")
+
 	src := NewImageSource(GCfg.KafkaSub.Brokers,
 		parseOffsetMode(GCfg.KafkaSub.OffsetMode),
 		GCfg.KafkaSub.TopicName, GCfg.KafkaSub.GroupName,
@@ -62,6 +66,8 @@ func main() {
 
 	pub := NewResultPublisher(GCfg.KafkaPub.Brokers, GCfg.KafkaPub.TopicName)
 	defer pub.Close()
+
+	log.Printf("Reading from kafka")
 
 	imgChan := make(chan Image, GCfg.BufSize)
 	resChan := make(chan PublishResult, GCfg.BufSize)
@@ -101,6 +107,8 @@ func main() {
 				continue
 			}
 
+			log.Printf("Start processing image %s", img.FileName)
+
 			ctx := C.new_context()
 			ctx.img = C.cv_mat_ptr_t(img.Image)
 
@@ -108,10 +116,10 @@ func main() {
 			C.infer_ad(activityDetector, ctx)
 
 			lbl := parseDetectionResultFromC(ctx)
-			resChan <- PublishResult {
-				FileName: img.FileName,
+			resChan <- PublishResult{
+				FileName:   img.FileName,
 				DeviceName: img.DeviceName,
-				Boxes: lbl,
+				Boxes:      lbl,
 			}
 		}
 	}()
