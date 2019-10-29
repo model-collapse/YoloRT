@@ -1,16 +1,18 @@
 package main
 
 // #include "api.h"
+// #include "stdlib.h"
 import "C"
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"encoding/json"
 	"log"
 	"strings"
 	"unsafe"
-
+	"time"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
@@ -37,15 +39,19 @@ type ImageSource struct {
 	GroupName    string
 	Timeout      int
 
-	consumer   kafka.Consumer
+	consumer   *kafka.Consumer
 	partitions []kafka.TopicPartition
 }
 
 func NewImageSource(brokers []string, offMode int, topicName, groupName string, timeout int) ImageSource {
-	consumer := kafka.NewConsumer(&kafka.ConfigMap{
-		"metadata.broker.list": strings.Join(borkers, ","),
+	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
+		"metadata.broker.list": strings.Join(brokers, ","),
 		"group.id":             groupName,
 	})
+
+	if err != nil {
+		log.Fatalf("Fail to create consumer: %v", err)
+	}
 
 	consumer.SubscribeTopics([]string{topicName}, nil)
 	partitions, err := consumer.Assignment()
@@ -56,9 +62,8 @@ func NewImageSource(brokers []string, offMode int, topicName, groupName string, 
 	if offMode == Full {
 		for i := range partitions {
 			partitions[i].Offset = kafka.OffsetBeginning
+			consumer.Seek(partitions[i], timeout)
 		}
-
-		consumer.Seek(partitions, 0)
 	}
 
 	return ImageSource{
@@ -73,15 +78,14 @@ func NewImageSource(brokers []string, offMode int, topicName, groupName string, 
 }
 
 func (s *ImageSource) Recv() Image {
-	if s.OffsetMode == Lastest {
+	if s.OffsetMode == Latest {
 		for i := range s.partitions {
 			s.partitions[i].Offset = kafka.OffsetEnd
+			s.consumer.Seek(s.partitions[i], s.Timeout)
 		}
-
-		s.consumer.Seek(s.partitions)
 	}
 
-	msg, err := s.consumer.ReadMessage(s.Timeout)
+	msg, err := s.consumer.ReadMessage(time.Duration(s.Timeout) * time.Millisecond)
 	if err != nil {
 		log.Printf("error in receiving message, %v", err)
 		return Image {
@@ -94,14 +98,14 @@ func (s *ImageSource) Recv() Image {
 		FileName   string `json: "file_name"`
 	}{}
 
-	if err := json.Unmarshal(msg, &cmd); err != nil {
-		log.Printf("Error format of message, %v", err))
+	if err := json.Unmarshal(msg.Value, &cmd); err != nil {
+		log.Printf("Error format of message, %v", err)
 		return Image {
 			Err: err,
 		}
 	}
 
-	url := fmt.Sprintf("%s/%s/%s", GCfg.FileServer.Addr, cmd,.DeviceName, cmd.FileName)
+	url := fmt.Sprintf("%s/%s/%s", GCfg.FileServer.Addr, cmd.DeviceName, cmd.FileName)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Printf("Error in getting image from %s", url)
@@ -114,16 +118,18 @@ func (s *ImageSource) Recv() Image {
 	data, _ := ioutil.ReadAll(resp.Body)
 
 	size := len(data)
-	ret := C.imdecode(data, size)
+	cdata := C.CBytes(data)
+	ret := C.imdecode(cdata, C.int(size))
+	C.free(cdata)
 
 	if s.OffsetMode == Last {
-		s.consumer.CommitMessage(&msg)
+		s.consumer.CommitMessage(msg)
 	}
 
 	return Image {
 		DeviceName: cmd.DeviceName,
 		FileName: cmd.FileName,
-		Image: unsafe.Pointer(ret)
+		Image: unsafe.Pointer(ret),
 	}
 }
 

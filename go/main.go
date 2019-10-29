@@ -28,7 +28,7 @@ type Image struct {
 type PublishResult struct {
 	DeviceName string `json: "device_id"`
 	FileName   string `json: "file_name"`
-	Boxes string []LabeledPerson `json:"boxes"`	
+	Boxes []LabeledPerson `json:"boxes"`
 }
 
 func main() {
