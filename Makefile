@@ -25,7 +25,7 @@ CC:= g++
 NVCC:=/usr/local/cuda/bin/nvcc
 
 CFLAGS:= -Wall -std=c++11 -fPIC -g -DTHREADED
-CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/cuda/include -I/usr/include -I/usr/local/include -I/usr/src/tensorrt/samples/common -I_3rdparty/include
+CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/cuda/include -I/usr/include -I/usr/local/include -I/usr/local/include/opencv4 -I/usr/src/tensorrt/samples/common -I_3rdparty/include
 
 LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda/lib64 -lcudart -lcublas -L_3rdparty/lib -lhashtable -lzookeeper -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -L/usr/lib/aarch64-linux-gnu -lpaho-mqtt3c -lpaho-mqttpp3 -lrestclient-cpp -lcurl -lboost_program_options -lzmq -lstdc++fs -lpthread
 LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
