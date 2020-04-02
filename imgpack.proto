@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+message ImgPack {
+    required string device_id = 1;
+    required int64 timestamp_send = 2;
+    required int64 timestamp_recv = 3;
+    required bytes image = 4;
+}

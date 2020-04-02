@@ -1,23 +1,60 @@
-#include "pub.h"
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
-#include <chrono>
+#include "recv.h"
+#include <opencv2/opencv.hpp>
+#include <inttypes.h>
+#include "dirent.h"
+#include "mqtt/client.h"
+#include "imagepack.ph.h"
+#include "mqtt/client.h"
 
-KafkaPublisher::KafkaPublisher(std::string address, std::string topic_name) {
-    cppkafka::Configuration config = {
-        { "metadata.broker.list", address }
-    };
+mqtt::connect_options conn_opts;
+mqtt::client* client;
+
+int32_t init_mqtt_client(const char* address, const char* client_name, bool clean_session) {
+    conn_opts.set_keep_alive_interval(20);
+    conn_opts.set_clean_session(clean_session);
+    client = new mqtt::client(address, client_name);
+    std::cerr << "Start to connect to MQTT @ " << address << std::endl;
+    mqtt::connect_response rsp = client.connect(conn_opts);
+    std::cerr << "Connected!" << std::endl;
+}
+
+int32_t close_mqtt_client() {
+    client->close();
+    delete client;
+}
+
+ImageSourceMQTT::ImageSourceMQTT(const char* topic) 
+{
+    std::cerr << "Subscribing..." << std::endl;
+    client->subscribe(std::vector<string>{std::string(topic)}, std::vector<int>{0});
+    std::cerr << "OK" << std::endl;
+}
+
+ImageSourceMQTT::~ImageSourceMQTT() {
+}
+
+ImageData ImageSourceMQTT::recv() {
+    auto msg = client->consume_message()
+    ImgPack pack;
+    pack.ParseFromString(string(msg.payload, msg.payloadlen));
     
-    this->producer = new cppkafka::Producer(config);
-    this->producer->set_timeout(std::chrono::milliseconds(30 * 1000));
-    this->topic_name = topic_name;
+    ImageData ret;
+    cv::Mat raw_data(1, pack.image().size(), CV_8UC1, pack.image());
+    ret.img = cv::imdecode(raw_data, cv::IMREAD_COLOR);
+    ret.device_id = pack.device_id();
+    ret.timestamp = pack.time_stamp_send();
+
+    return ret;
 }
 
-KafkaPublisher::~KafkaPublisher() {
+ResultPublisher::ResultPublisher(const char* topic_name) {
+    this->topic = topic_name;
 }
 
-void KafkaPublisher::publish(std::string device_id, std::string file_name, std::vector<LabeledPeople> people) {
+ResultPublisher::~ResultPublisher() {
+}
+
+void ResultPublisher::publish(const char* desvice_id, int64_t timestamp, std::vector<LabeledPeople> people) {
     auto beg_doc = std::chrono::system_clock::now();
     rapidjson::Document d;
     d.SetObject();
@@ -64,11 +101,9 @@ void KafkaPublisher::publish(std::string device_id, std::string file_name, std::
     std::cerr << "json = " << json_data << std::endl;
 
     auto beg_prod = std::chrono::system_clock::now();
-    cppkafka::MessageBuilder builder(this->topic_name);
-    builder.payload(json_data);
-    this->producer->produce(builder);
-    this->producer->flush();
-    auto end_prod = std::chrono::system_clock::now();
+    auto msg = mqtt::make_message(this->topic, json_data);
+    msg->set_qos(0);
+    client->publish(msg);
 
     auto msecs = [](std::chrono::system_clock::time_point beg, std::chrono::system_clock::time_point end) -> int {
             return std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();

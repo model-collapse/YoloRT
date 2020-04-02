@@ -8,7 +8,6 @@
 #include "activity_detection.h"
 #include <chrono>
 #include "cfg.h"
-#include "zk.h"
 
 const int32_t PC_BATCH_SIZE = 1;
 
@@ -64,30 +63,17 @@ void mark_a_labeled_person(cv::Mat canvas, LabeledPeople person) {
     cv::putText(canvas, text, cv::Point(text_left + margin, text_top + text_height - margin - anchor), font, font_scale, txt_color, thickness);
 }
 
-int32_t init_zk_with_cfg_or_env(AllConfig* cfg) {
-    const char* zk_path_env = std::getenv(ZK_PATH_ENV_NAME);
-    std::string zk_path;
-    if (zk_path_env == NULL) {
-        zk_path = cfg->zk_addr;
-    } else {
-        zk_path = zk_path_env;
-    }
-
-    return init_zk(zk_path);
-}
-
 int32_t main(int32_t argc, char** argv) {
     AllConfig cfg;
     load_config_from_file(CONF_PATH, &cfg);
-    init_zk_with_cfg_or_env(&cfg);
-    //update_kafka_settings(cfg.zk_kafka_path, &cfg);
 
     fprintf(stderr, "ZK initialized\n");
     fflush(stderr);
 
+
     // creating image source
-    ImageSourceKafka src(cfg.kafka_in.brokers, cfg.kafka_in.group_name , cfg.kafka_in.topic_name, cfg.fs_addr);
-    KafkaPublisher pub(cfg.kafka_out.brokers, cfg.kafka_out.topic_name);
+    ImageSourceMQTT src(cfg.in_topic_name);
+    ResultPublisher pub(cfg.out_topic_name);
 
     ActivityDetector ad(cfg.act.model_file, cfg.act.name_file, cfg.act.batch_size,cfg.act.ext_scale, gLogger);
     PeopleDetector pd(cfg.yolo.model_file, PC_BATCH_SIZE, cfg.yolo.cls_thres, cfg.yolo.nms_thres, gLogger);
@@ -108,7 +94,7 @@ int32_t main(int32_t argc, char** argv) {
         auto persons = ad.detect(img_data.img, boxes);
         std::cerr << "[marked]" << std::endl;
 
-       	pub.publish(img_data.device_id, img_data.file_name, persons); 
+       	pub.publish(img_data.device_id, img_data.timestamp, persons); 
         auto end_wall = std::chrono::system_clock::now();;
 
         std::cerr << "[WALL]: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_wall - beg_wall).count() << "ms" << std::endl;
