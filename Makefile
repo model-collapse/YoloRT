@@ -25,13 +25,13 @@ CC:= g++
 NVCC:=/usr/local/cuda/bin/nvcc
 
 CFLAGS:= -Wall -std=c++11 -fPIC -g -DTHREADED
-CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/cuda/include -I/usr/include -I/usr/src/tensorrt/samples/common -I_3rdparty/include
+CFLAGS+= -I/opt/nvidia/deepstream/deepstream-4.0/sources/includes/ -I/usr/local/cuda/include -I/usr/include -I/usr/local/include -I/usr/local/include/opencv4 -I/usr/src/tensorrt/samples/common -I_3rdparty/include -I/usr/include/aarch64-linux-gnu/
 
-LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda/lib64 -lcudart -lcublas -L_3rdparty/lib -lhashtable -lzookeeper -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -L/usr/lib/aarch64-linux-gnu -lcppkafka -lrestclient-cpp -lcurl -lboost_program_options -lzmq -lstdc++fs -lpthread
+LIBS:= -lnvinfer_plugin -lnvinfer -lnvparsers -L/usr/local/cuda/lib64 -lcudart -lcublas -L_3rdparty/lib -lhashtable -lzookeeper -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -L/usr/lib/aarch64-linux-gnu -lpaho-mqtt3c -lpaho-mqttpp3 -lrestclient-cpp -lcurl -lboost_program_options -lzmq -lstdc++fs -lpthread
 LFLAGS:= -g -Wl,--start-group $(LIBS) -Wl,--end-group
 
 INCS:= $(wildcard *.h)
-BASE_SRCFILES:= recv.cpp \
+BASE_SRCFILES:= \
 	   activity_detection.cpp    \
            people_counting.cpp    \
            nvdsparsebbox_Yolo.cpp   \
@@ -39,10 +39,10 @@ BASE_SRCFILES:= recv.cpp \
            yoloPlugins.cpp    \
            trt_utils.cpp              \
            yolo.cpp             \
-		   pub.cpp 				\
+		   mqtt.cpp 				\
 		   cfg.cpp				\
-		   zk.cpp 				\
 		   api.cpp				\
+		   imgpack.pb.cc 	\
            kernels.cu       
 TARGET_EXEC:= yolo_detection
 CVT_EXEC:= convert_to_trt
@@ -52,10 +52,14 @@ TARGET_LIB:= libyolo_detection.so
 
 TARGET_OBJS:= $(BASE_SRCFILES:.cpp=.o)
 TARGET_OBJS:= $(TARGET_OBJS:.cu=.o)
+TARGET_OBJS:= $(TARGET_OBJS:.cc=.o)
 
 all: $(TARGET_EXEC)
 
 %.o: %.cpp $(INCS) Makefile
+	$(CC) -c -o $@ $(CFLAGS) $<
+
+%.o: %.cc $(INCS) Makefile
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 %.o: %.cu $(INCS) Makefile

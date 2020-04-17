@@ -3,10 +3,12 @@
 
 #include <string>
 
-struct KafkaCFG {
-    std::string brokers;
-    std::string topic_name;
-    std::string group_name;
+struct MQTTCFG {
+    std::string addr;
+    std::string client_name;
+    bool clean_session;
+    std::string in_topic_name;
+    std::string out_topic_name;
 };
 
 struct YoloCFG {
@@ -23,13 +25,9 @@ struct ActCFG {
 };
 
 struct AllConfig {
-    std::string zk_addr;
-    std::string zk_kafka_path;
-    std::string fs_addr;
     YoloCFG yolo;
     ActCFG act;
-    KafkaCFG kafka_in;
-    KafkaCFG kafka_out;
+    MQTTCFG mqtt;
 };
 
 int32_t load_config_from_file(std::string path, AllConfig* cfg);
